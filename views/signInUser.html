@@ -3,26 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <title>Sign In</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
-  <link rel="stylesheet" href="../static/credentials.css">
-  <script type = "text/javascript" src = "../static/credentials.js"></script>
+  <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico">
+  <link rel="stylesheet" href="../static/css/common.css">
+  <script type = "text/javascript" src = "../static/js/common.js"></script>
 </head>
 
 <body>
-  <div id="login-form-wrap">
-    <h2>Sign In</h2>
-    <form id="login-form" onsubmit="signInButton(); return false">
-      <input type="email" id="email" name="email" placeholder="Email Address" required><i class="validation"></i>
-      <p></p>
-      <input type="text" id="password" name="password" placeholder="Password" required>
-      <p></p>
-      <input type="submit" id="login" value="Login">
-    </form>
-    <div id="create-account-wrap">
-      <p>Not a member? <a href="http://127.0.0.1:3001/signUpUser.html">Create Account</a><p>
+  <div id="error"></div>
+  <center>
+    <div style="width: 100%" id="header">
+      <table width="1000px" align="center" border="0" style="border-spacing: 0px; padding:0; margin: 0 auto">
+        <tr>
+          <td>
+            <span id="logo">ToDo App</span>
+          </td>
+        </tr>
+      </table>
     </div>
+  </center>
+<br />
+  <div id="login">
+    <div id="loginheader" style="float: left">
+      Sign In
+      <div style="float: right; padding: 0; margin: -25px -10px 0 0;">
+        <img height="70px" src="../static/images/logo_128.png" alt="ToDo App Logo" />
+      </div>
+    </div>
+    <form method="get">
+      <table>
+        <tr>
+          <td align="left">
+            <span class="field_label">Username</span>
+            <input class="forminput" type="text" id="username" name="username" value=""/>
+          </td>
+        </tr>
+        <tr>
+          <td align="left">
+            <span class="field_label">Password</span>
+            <input class="forminput" type="password" id="password" name="password" value=""/>
+          </td>
+        </tr>
+          <td align="center">
+            <button id="usernamesubmit" type="submit">Sign in to ToDo App</button>
+          </td>
+        </tr>
+      </tr>
+      <tr>
+      <td align="center">
+        <p style="text-align: center;" id="signup">New User Sign Up</a>
+      </td>
+    </tr>
+    </tr>
+      </table>
+    </form>
   </div>
-  
+
+<br />
+<br />
+<table align="center">
+  <tr>
+    <td>
+      &COPY; 2023 Zeeshanz  A Zakaria
+    </td>
+  </tr>
+
 </body>
 </html>
 
