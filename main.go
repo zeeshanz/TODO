@@ -24,7 +24,7 @@ func main() {
 
 	app.Static("/static", "./static")
 	app.Static("/", "./views", fiber.Static{
-		Index: "login.html",
+		Index: "signInUser.html",
 	})
 
 	setupRoutes(app)
