@@ -33,5 +33,5 @@ type User struct {
 type UserResponse struct {
         ID       uint   `json:"id"`
         Username string `json:"username"`
-        Tasks    []Task `json:"tasks"`
+        Tasks    []Task `json:"tasks" gorm:"foreignKey:TaskName"`
 }
