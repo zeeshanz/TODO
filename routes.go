@@ -9,4 +9,5 @@ func setupRoutes(app *fiber.App) {
 
 	app.Post("/signInUser", handlers.SignInUser)
 	app.Post("/signUpUser", handlers.SignUpUser)
+	app.Get("/tasks", handlers.ShowTasks)
 }

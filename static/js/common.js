@@ -1,10 +1,11 @@
-window.onload = function() {
+window.onload = function () {
   document.getElementById("username").focus();
   disableButtonIfFieldsAreEmpty()
 }
 
+//
 function signInUser() {
-  if(($('#username').val()).length<3 || ($('#password').val()).length<3) {
+  if (($('#username').val()).length < 3 || ($('#password').val()).length < 3) {
     $.showAlert("Username and password fields cannot be empty", true)
   } else {
     var username = $('#username').val()
@@ -21,20 +22,25 @@ function signInUser() {
       })
     }
     fetch('/signInUser', fetchData)
-    .then(resposne => {
-      var status = resposne.status
-      if (status == 200) {
-        $.showAlert("Sign in successful. Opening the ToDo page", false)
-      } else {
-        $.showAlert("Sign in failed", true)
-      }
-    })
+      .then(resposne => {
+        var status = resposne.status
+        if (status == 200) {
+          $.showAlert("Sign in successful. Opening the ToDo page", false)
+          var alerttimer = window.setTimeout(function () {
+            $("html").fadeOut(function () {
+              window.location.href = "/tasks";
+          });
+          }, 3000);
+        } else {
+          $.showAlert("Sign in failed", true)
+        }
+      })
   }
 }
 
 //
 function signUpUser() {
-  if(($('#username').val()).length<3 || ($('#password').val()).length<3) {
+  if (($('#username').val()).length < 3 || ($('#password').val()).length < 3) {
     $.showAlert("Username and password fields cannot be empty", true)
   } else {
     var username = $('#username').val()
@@ -51,41 +57,41 @@ function signUpUser() {
       })
     }
     fetch('/signUpUser', fetchData)
-    .then(resposne => {
-      var status = resposne.status
-      if (status == 200) {
-        $.showAlert("Successfully added new user", false)
-      } else {
-        $.showAlert("Could not add user to the database. Response code: " + status, true)
-      }
-    })
+      .then(resposne => {
+        var status = resposne.status
+        if (status == 200) {
+          $.showAlert("Successfully added new user", false)
+        } else {
+          $.showAlert("Could not add user to the database. Response code: " + status, true)
+        }
+      })
   }
 }
 
-/// Common functions
+/// COMMON FUNCTIONS
 
 // Show error message which pops up top of the screen
-$.showAlert = function(message, isError) {
+$.showAlert = function (message, isError) {
   $('div#alert').html(message);
-    var $alert = $('div#alert');
-    if (isError) {
-      $("div#alert").css("background-color", "#F00");
-    } else {
-      $("div#alert").css("background-color", "#006400");
-    }
-    if($alert.length) {
-      var alerttimer = window.setTimeout(function () {
-          $alert.trigger('click');
-      }, 3000);
-      $alert.animate({height: $alert.css('line-height') || '50px'}, 200)
+  var $alert = $('div#alert');
+  if (isError) {
+    $("div#alert").css("background-color", "#F00");
+  } else {
+    $("div#alert").css("background-color", "#006400");
+  }
+  if ($alert.length) {
+    var alerttimer = window.setTimeout(function () {
+      $alert.trigger('click');
+    }, 3000);
+    $alert.animate({ height: $alert.css('line-height') || '50px' }, 200)
       .click(function () {
-          window.clearTimeout(alerttimer);
-          $alert.animate({height: '0'}, 200);
+        window.clearTimeout(alerttimer);
+        $alert.animate({ height: '0' }, 200);
       });
   }
 }
 
-//
+// Enable or disable the sign in button if input fields are empty
 function disableButtonIfFieldsAreEmpty() {
   $('.forminput').keyup(function () {
     var empty = false;

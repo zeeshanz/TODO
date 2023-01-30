@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -20,6 +21,9 @@ const SecretKey = "secret"
 
 var userLoggedIn models.User
 
+/*
+ * Sign up a new user.
+ */
 func SignUpUser(c *fiber.Ctx) error {
 	var creds models.User
 	// First we need to parse the variable ctx to receive the credentials
@@ -42,40 +46,49 @@ func SignUpUser(c *fiber.Ctx) error {
 	}
 }
 
-func SignInUser(c *fiber.Ctx) error {
-	LogInType = "-1"
-
-	user1 := new(models.User)
-	if err := c.BodyParser(user1); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": err.Error(),
+/*
+ * Sign in the user. Create a cookie to remember the user.
+ */
+func SignInUser(ctx *fiber.Ctx) error {
+	var user models.User
+	err := ctx.BodyParser(&user)
+	if err != nil {
+		fmt.Println("Error with parsing credentials")
+	}
+	err = initializers.AuthenticateUser(user)
+	if err != nil {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"success": false,
+			"message": "No account found. Please signup first.",
 		})
 	}
+	cookie := new(fiber.Cookie)
+	cookie.Name = "username"
+	cookie.Value = strconv.FormatUint(uint64(initializers.GetUserId(user)), 10)
+	cookie.Expires = time.Now().Add(24 * time.Hour)
+	ctx.Cookie(cookie)
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Sign-in successful.",
+	})
+}
 
-	for i := 0; i < len(current_data); i++ {
-		if current_data[i].Username == user1.Username {
+/*
+ * Retrieve tasks from the database.
+ */
+func ShowTasks(ctx *fiber.Ctx) error {
+	userID, _ := strconv.ParseUint(ctx.Cookies("userID"), 10, 64)
+	ID := uint(userID)
+	taskResponse, err := initializers.ReturnTasksWithID(ID)
 
-			LogInType = "0"
-			if current_data[i].Password == user1.Password {
-
-				LogInType = "-2"
-				userLoggedIn = current_data[i]
-				cookie := fiber.Cookie{
-					Name:     "jwt",
-					Value:    "token-to-be",
-					Expires:  time.Now().Add(time.Hour * 24),
-					HTTPOnly: true,
-				}
-				c.Cookie(&cookie)
-
-				return c.Redirect("/taskPage")
-			}
-
-		}
+	if err != nil {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"success": false,
+			"message": err,
+		})
+	} else {
+		return ctx.Render("tasks", fiber.Map{
+			"Tasks": taskResponse,
+		})
 	}
-
-	newReload = false
-	regLoad = false
-	current_user = user1
-	return c.Redirect("/")
 }
