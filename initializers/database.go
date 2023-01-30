@@ -36,8 +36,8 @@ func ConnectDB(config *Config) {
  */
 func AddUser(userInfo models.User) error {
 	var tempUser models.User
-	doesExist := DB.Db.Where("username = ?", userInfo.Username).First(&tempUser).Error
-	if doesExist != nil {
+	canAddThisUser := DB.Db.Where("username = ?", userInfo.Username).First(&tempUser).Error
+	if canAddThisUser == nil {
 		return errors.New("This username already exists.")
 	}
 
