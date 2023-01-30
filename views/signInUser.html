@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Sign In</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
   <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico">
   <link rel="stylesheet" href="../static/css/common.css">
   <script type = "text/javascript" src = "../static/js/common.js"></script>
@@ -47,7 +48,7 @@
           <td align="center">
             <button id="usernamesubmit" type="submit">Sign in to ToDo App</button>
             </br>
-            <a style="text-align: center;" id="signup">New User Sign Up</a>
+            <a style="text-align: center;" id="signUpUser" onclick="signUpUser()">New User Sign Up</a>
           </td>
         </tr>
     </tr>
@@ -60,10 +61,10 @@
 <table align="center">
   <tr>
     <td>
-      &COPY; 2023 Zeeshanz  A Zakaria
+      &COPY; 2023 Zeeshanz A Zakaria
     </td>
   </tr>
-
+  <script src="../static/js/common.js"></script>
 </body>
 </html>
 
