@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -20,38 +21,25 @@ const SecretKey = "secret"
 var userLoggedIn models.User
 
 func SignUpUser(c *fiber.Ctx) error {
-	user := new(models.User)
-	if err := c.BodyParser(user); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": err.Error(),
+	var creds models.User
+	// First we need to parse the variable ctx to receive the credentials
+	err := c.BodyParser(&creds)
+	if err != nil {
+		fmt.Println("Error with parsing credentials")
+	}
+
+	err = initializers.AddUser(creds)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"success": false,
+			"message": "User already exists.",
+		})
+	} else {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"success": true,
+			"message": "User successfully added.",
 		})
 	}
-	for i := 0; i < len(current_data); i++ {
-		if current_data[i].Username == user.Username {
-			userExists = true
-		}
-	}
-
-	if !userExists {
-		initializers.DB.Db.Create(&user)
-	}
-	current_user = user
-	regLoad = true
-	newReload = false
-	// return c.Redirect("/")
-
-	// Return status 200 OK.
-	var response = c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"success": true,
-		"message": "Added user " + current_user.Username,
-	})
-	return response
-	// return c.JSON(fiber.Map{
-	// 	"error":      false,
-	// 	"msg":        nil,
-	// 	"username":   current_user.Username,
-	// 	"statusCode": 200,
-	// })
 }
 
 func SignInUser(c *fiber.Ctx) error {

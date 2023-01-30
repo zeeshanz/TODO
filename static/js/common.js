@@ -47,30 +47,6 @@ function signUpUser() {
       }
     })
   }
-
-
-
-
-
-
-
-  //   $.post(
-  //     '/signUpUser',
-  //     {
-  //       username: $('#username').val(),
-  //       password: $('#password').val()
-  //     },
-  //     function(result) {
-  //       var json = $.parseJson(result)
-  //       if (json.statusCode != 200) {
-  //         $.showAlert("Could not add user to the database", true)
-  //       } else {
-  //         $.showAlert("Successfully added new user " + json.username, false)
-  //       } 
-  //     },
-  //     "json"
-  //   )
-  // }
 }
 
 /// Common functions
