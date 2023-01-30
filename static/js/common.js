@@ -1,5 +1,6 @@
 window.onload = function() {
   document.getElementById("username").focus();
+  disableButtonIfFieldsAreEmpty()
 }
 
 function signInUser() {
@@ -55,7 +56,7 @@ function signUpUser() {
       if (status == 200) {
         $.showAlert("Successfully added new user", false)
       } else {
-        $.showAlert("Could not add user to the database", true)
+        $.showAlert("Could not add user to the database. Response code: " + status, true)
       }
     })
   }
@@ -82,4 +83,21 @@ $.showAlert = function(message, isError) {
           $alert.animate({height: '0'}, 200);
       });
   }
+}
+
+//
+function disableButtonIfFieldsAreEmpty() {
+  $('.forminput').keyup(function () {
+    var empty = false;
+    $('.forminput').each(function () {
+      if ($(this).val().length < 4) {
+        empty = true;
+      }
+    });
+
+    if (empty)
+      $('#signInUserButton').prop('disabled', true);
+    else
+      $('#signInUserButton').prop('disabled', false);
+  });
 }
