@@ -2,23 +2,34 @@ window.onload = function() {
   document.getElementById("username").focus();
 }
 
-$("#signInUser").click(function() {
-  $.post(
-    '/signInUser',
-    {
-      username: $('#username').val(),
-      password: $('#password').val()
-    },
-    function(result) {
-      if (result != 1) {
-        $.showAlert(result)
-      } else {
-       window.location.reload()
-      } 
+function signInUser() {
+  if(($('#username').val()).length<3 || ($('#password').val()).length<3) {
+    $.showAlert("Username and password fields cannot be empty", true)
+  } else {
+    var username = $('#username').val()
+    var password = $('#password').val()
+    let loginData = {
+      username: username,
+      password: password
     }
-  );
-    return false
-})
+    let fetchData = {
+      method: 'POST',
+      body: JSON.stringify(loginData),
+      headers: new Headers({
+        'Content-Type': 'application/json; charset=UTF-8'
+      })
+    }
+    fetch('/signInUser', fetchData)
+    .then(resposne => {
+      var status = resposne.status
+      if (status == 200) {
+        $.showAlert("Sign in successful. Opening the ToDo page", false)
+      } else {
+        $.showAlert("Sign in failed", true)
+      }
+    })
+  }
+}
 
 //
 function signUpUser() {
@@ -40,7 +51,8 @@ function signUpUser() {
     }
     fetch('/signUpUser', fetchData)
     .then(resposne => {
-      if (resposne.status == 200) {
+      var status = resposne.status
+      if (status == 200) {
         $.showAlert("Successfully added new user", false)
       } else {
         $.showAlert("Could not add user to the database", true)

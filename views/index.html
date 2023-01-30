@@ -29,7 +29,6 @@
         <img height="70px" src="../static/images/logo_128.png" alt="ToDo App Logo" />
       </div>
     </div>
-    <form method="post" action="/signInUser" id="signForm">
       <table>
         <tr>
           <td align="left">
@@ -45,14 +44,13 @@
         </tr>
         <tr>
           <td align="center">
-            <button id="usernamesubmit" type="submit">Sign in to ToDo App</button>
+            <button id="signInUser" onclick="signInUser()">Sign in to ToDo App</button>
             </br>
             <a style="text-align: center;" id="signUpUser" onclick="signUpUser()">New User Sign Up</a>
           </td>
         </tr>
-    </tr>
-      </table>
-    </form>
+      </tr>
+    </table>
   </div>
 
 <br />
@@ -66,4 +64,3 @@
   <script src="../static/js/common.js"></script>
 </body>
 </html>
-
