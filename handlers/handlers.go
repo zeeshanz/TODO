@@ -38,7 +38,20 @@ func SignUpUser(c *fiber.Ctx) error {
 	current_user = user
 	regLoad = true
 	newReload = false
-	return c.Redirect("/")
+	// return c.Redirect("/")
+
+	// Return status 200 OK.
+	var response = c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Added user " + current_user.Username,
+	})
+	return response
+	// return c.JSON(fiber.Map{
+	// 	"error":      false,
+	// 	"msg":        nil,
+	// 	"username":   current_user.Username,
+	// 	"statusCode": 200,
+	// })
 }
 
 func SignInUser(c *fiber.Ctx) error {

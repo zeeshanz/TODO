@@ -6,11 +6,10 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
   <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico">
   <link rel="stylesheet" href="../static/css/common.css">
-  <script type = "text/javascript" src = "../static/js/common.js"></script>
 </head>
 
 <body>
-  <div id="error"></div>
+  <div id="alert"></div>
   <center>
     <div style="width: 100%" id="header">
       <table width="1000px" align="center" border="0" style="border-spacing: 0px; padding:0; margin: 0 auto">
@@ -30,18 +29,18 @@
         <img height="70px" src="../static/images/logo_128.png" alt="ToDo App Logo" />
       </div>
     </div>
-    <form method="get">
+    <form method="post" action="/signInUser" id="signForm">
       <table>
         <tr>
           <td align="left">
             <span class="field_label">Username</span>
-            <input class="forminput" type="text" id="username" name="username" value=""/>
+            <input class="forminput" type="text" id="username" name="username" value="zeeshan"/>
           </td>
         </tr>
         <tr>
           <td align="left">
             <span class="field_label">Password</span>
-            <input class="forminput" type="password" id="password" name="password" value=""/>
+            <input class="forminput" type="password" id="password" name="password" value="password"/>
           </td>
         </tr>
         <tr>
@@ -61,7 +60,7 @@
 <table align="center">
   <tr>
     <td>
-      &COPY; 2023 Zeeshanz A Zakaria
+      &COPY; 2023 Zeeshan A Zakaria
     </td>
   </tr>
   <script src="../static/js/common.js"></script>
