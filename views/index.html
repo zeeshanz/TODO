@@ -33,18 +33,18 @@
         <tr>
           <td align="left">
             <span class="field_label">Username</span>
-            <input class="forminput" type="text" id="username" name="username" value="zeeshan"/>
+            <input class="forminput" type="text" id="username" placeholder="4 or more characters" name="username" value=""/>
           </td>
         </tr>
         <tr>
           <td align="left">
             <span class="field_label">Password</span>
-            <input class="forminput" type="password" id="password" name="password" value="password"/>
+            <input class="forminput" type="password" id="password" name="password" value=""/>
           </td>
         </tr>
         <tr>
           <td align="center">
-            <button id="signInUser" onclick="signInUser()">Sign in to ToDo App</button>
+            <button disabled="true" id="signInUserButton" onclick="signInUser()">Sign in to ToDo App</button>
             </br>
             <a style="text-align: center;" id="signUpUser" onclick="signUpUser()">New User Sign Up</a>
           </td>

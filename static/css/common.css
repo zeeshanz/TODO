@@ -41,6 +41,19 @@ a:link {
     color: blue;
   }
 
+  ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: rgb(174, 174, 174);
+    opacity: 1; /* Firefox */
+  }
+  
+  :-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: rgb(174, 174, 174);
+  }
+  
+  ::-ms-input-placeholder { /* Microsoft Edge */
+    color: rgb(174, 174, 174);
+  }
+
 #container {
   background-color:#fffffa;
   min-height: 100%;
@@ -208,6 +221,10 @@ button:hover {
   background: linear-gradient(top,#3068a2 0,#4687ce 100%);
   filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ededed');
   background-color:#3068a2;
+}
+
+button:disabled {
+  opacity: 0.5;
 }
 
 .log {
