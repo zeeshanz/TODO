@@ -13,20 +13,24 @@ type RedisInstance struct {
 
 var Cache RedisInstance
 
-func test() {
-	ctx := context.Background()
-	ConnectRedis(ctx)
+func testRedis(ctx context.Context) {
+	SetToRedis(ctx, "key1", "Canada")
+	SetToRedis(ctx, "key2", "Ottawa")
+	val1 := GetFromRedis(ctx, "key1")
+	val2 := GetFromRedis(ctx, "key2")
+	fmt.Printf("First value with key `key1` should be Canada: %s \n", val1)
+	fmt.Printf("First value with key `key2` should be Ottawa: %s \n", val2)
+	values := getAllKeys(ctx, "key*")
+	fmt.Printf("All keys : %v \n", values)
+}
 
-	SetToRedis(ctx, "name", "redis-test")
-	SetToRedis(ctx, "name2", "redis-test-2")
-	val := GetFromRedis(ctx, "name")
-
-	fmt.Printf("First value with name key : %s \n", val)
-
-	values := getAllKeys(ctx, "name*")
-
-	fmt.Printf("All values : %v \n", values)
-
+func pingRedis(ctx context.Context) {
+	fmt.Println("PING")
+	pong, err := Cache.redis.Ping(ctx).Result()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(pong)
 }
 
 func ConnectRedis(ctx context.Context) {
@@ -36,15 +40,12 @@ func ConnectRedis(ctx context.Context) {
 		DB:       0,
 	})
 
-	pong, err := client.Ping(ctx).Result()
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(pong)
-
 	Cache = RedisInstance{
 		redis: client,
 	}
+
+	pingRedis(ctx)
+	testRedis(ctx)
 }
 
 func SetToRedis(ctx context.Context, key, val string) {
