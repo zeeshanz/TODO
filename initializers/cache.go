@@ -7,15 +7,19 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-var redisClient *redis.Client
+type RedisInstance struct {
+	redis *redis.Client
+}
 
-func init() {
-	ctx := context.TODO()
-	connectRedis(ctx)
+var Cache RedisInstance
 
-	setToRedis(ctx, "name", "redis-test")
-	setToRedis(ctx, "name2", "redis-test-2")
-	val := getFromRedis(ctx, "name")
+func test() {
+	ctx := context.Background()
+	ConnectRedis(ctx)
+
+	SetToRedis(ctx, "name", "redis-test")
+	SetToRedis(ctx, "name2", "redis-test-2")
+	val := GetFromRedis(ctx, "name")
 
 	fmt.Printf("First value with name key : %s \n", val)
 
@@ -25,7 +29,7 @@ func init() {
 
 }
 
-func connectRedis(ctx context.Context) {
+func ConnectRedis(ctx context.Context) {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
@@ -38,18 +42,20 @@ func connectRedis(ctx context.Context) {
 	}
 	fmt.Println(pong)
 
-	redisClient = client
+	Cache = RedisInstance{
+		redis: client,
+	}
 }
 
-func setToRedis(ctx context.Context, key, val string) {
-	err := redisClient.Set(ctx, key, val, 0).Err()
+func SetToRedis(ctx context.Context, key, val string) {
+	err := Cache.redis.Set(ctx, key, val, 0).Err()
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func getFromRedis(ctx context.Context, key string) string {
-	val, err := redisClient.Get(ctx, key).Result()
+func GetFromRedis(ctx context.Context, key string) string {
+	val, err := Cache.redis.Get(ctx, key).Result()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -60,7 +66,7 @@ func getFromRedis(ctx context.Context, key string) string {
 func getAllKeys(ctx context.Context, key string) []string {
 	keys := []string{}
 
-	iter := redisClient.Scan(ctx, 0, key, 0).Iterator()
+	iter := Cache.redis.Scan(ctx, 0, key, 0).Iterator()
 	for iter.Next(ctx) {
 		keys = append(keys, iter.Val())
 	}
