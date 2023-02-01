@@ -1,1 +1,39 @@
-<p>This is the task page</p>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tasks</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico">
+    <link rel="stylesheet" href="../static/css/common.css">
+</head>
+
+<body>
+    <div id="alert"></div>
+    <center>
+        <div style="width: 100%" id="header">
+            <table width="1000px" align="center" border="0" style="border-spacing: 0px; padding:0; margin: 0 auto">
+                <tr>
+                    <td>
+                        <span id="logo">ToDo App</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </center>
+
+    <div id="AddTask" class="header">
+        <h2>My To Do List</h2>
+        <input type="text" id="myInput" placeholder="Task Name">
+        <span onclick="newElement()" class="addBtn">Add</span>
+    </div>
+
+    <ul id="taskList">
+        {{range .Tasks}}
+        <li>{{.TaskName}}</li>
+        {{end}}
+    </ul>
+</body>
+
+</html>

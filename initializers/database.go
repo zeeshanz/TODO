@@ -38,7 +38,7 @@ func AddUser(userInfo models.User) error {
 	var tempUser models.User
 	canAddThisUser := DB.Db.Where("username = ?", userInfo.Username).First(&tempUser).Error
 	if canAddThisUser == nil {
-		return errors.New("This username already exists.")
+		return errors.New("this username already exists")
 	}
 
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(userInfo.Password), bcrypt.DefaultCost)
@@ -60,16 +60,17 @@ func AddUser(userInfo models.User) error {
  */
 func AuthenticateUser(userInfo models.User) error {
 	var tempUser models.User
+
 	err := DB.Db.Where("username = ?", userInfo.Username).First(&tempUser).Error
 	if err == nil {
 		err = bcrypt.CompareHashAndPassword([]byte(tempUser.Password), []byte(userInfo.Password))
 		if err == nil {
 			return nil
 		} else {
-			return errors.New("Incorrect password. Please try again.")
+			return errors.New("incorrect password please try again")
 		}
 	} else {
-		return errors.New("Username not found.")
+		return errors.New("username not found")
 	}
 }
 
@@ -83,16 +84,11 @@ func GetUserId(userInfo models.User) uint {
 }
 
 func ReturnTasksWithID(ID uint) ([]models.Task, error) {
-	tempTasks := []models.User{}
-	// As the user model stores a task struct, and not TaskResponse, we need to create
-	// another variable so we can return the TaskResponse
-	resTasks := []models.Task{}
-	err := DB.Db.Where("ID = ?", ID).First(&tempTasks).Error
+	userTasks := []models.Task{}
+	err := DB.Db.Where("ID = ?", ID).First(&userTasks).Error
 	if err != nil {
-		return resTasks, err
+		return userTasks, err
 	}
-	// If no error, we can copy the tasks into the resTasks. The copier function handles this for us
-	// copier.Copy(&resTasks, &tempTasks)
-	return resTasks, nil
+	return userTasks, nil
 
 }

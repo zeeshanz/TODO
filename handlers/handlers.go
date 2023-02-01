@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"time"
@@ -50,11 +51,13 @@ func SignUpUser(c *fiber.Ctx) error {
  * Sign in the user. Create a cookie to remember the user.
  */
 func SignInUser(ctx *fiber.Ctx) error {
+
 	var user models.User
 	err := ctx.BodyParser(&user)
 	if err != nil {
 		fmt.Println("Error with parsing credentials")
 	}
+
 	err = initializers.AuthenticateUser(user)
 	if err != nil {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -62,11 +65,15 @@ func SignInUser(ctx *fiber.Ctx) error {
 			"message": "No account found. Please signup first.",
 		})
 	}
+
 	cookie := new(fiber.Cookie)
 	cookie.Name = "username"
 	cookie.Value = strconv.FormatUint(uint64(initializers.GetUserId(user)), 10)
 	cookie.Expires = time.Now().Add(24 * time.Hour)
 	ctx.Cookie(cookie)
+	c := context.Background()
+	initializers.SetToRedis(c, "username", user.Username)
+
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
 		"message": "Sign-in successful.",
@@ -77,18 +84,22 @@ func SignInUser(ctx *fiber.Ctx) error {
  * Retrieve tasks from the database.
  */
 func ShowTasks(ctx *fiber.Ctx) error {
-	userID, _ := strconv.ParseUint(ctx.Cookies("userID"), 10, 64)
-	ID := uint(userID)
-	taskResponse, err := initializers.ReturnTasksWithID(ID)
+	c := context.Background()
+	username := initializers.GetFromRedis(c, "username")
+	fmt.Printf("username retrieved from session is %v", username)
+	// ID := uint(userID)
+	// taskResponse, err := initializers.ReturnTasksWithID(ID)
 
-	if err != nil {
-		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"success": false,
-			"message": err,
-		})
-	} else {
-		return ctx.Render("tasks", fiber.Map{
-			"Tasks": taskResponse,
-		})
-	}
+	// if err != nil {
+	// 	return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+	// 		"success": false,
+	// 		"message": err,
+	// 	})
+	// } else {
+	// 	return ctx.Render("tasks", fiber.Map{
+	// 		"Tasks": taskResponse,
+	// 	})
+	// }
+
+	return nil
 }

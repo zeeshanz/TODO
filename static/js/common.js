@@ -29,10 +29,10 @@ function signInUser() {
           var alerttimer = window.setTimeout(function () {
             $("html").fadeOut(function () {
               window.location.href = "/tasks";
-          });
+            });
           }, 3000);
         } else {
-          $.showAlert("Sign in failed", true)
+          $.showAlert("Sign in failed. Username or password incorrect.", true)
         }
       })
   }
