@@ -77,18 +77,20 @@ func AuthenticateUser(userInfo models.User) error {
 /*
  * Retrieve username
  */
-func GetUserId(userInfo models.User) uint {
+func GetUserId(username string) uint {
 	var tempUser models.User
-	DB.Db.Where("username = ?", userInfo.Username).First(&tempUser)
+	err := DB.Db.Where("username = ?", username).First(&tempUser).Error
+	if err != nil {
+		return 0
+	}
 	return tempUser.ID
 }
 
-func ReturnTasksWithID(ID uint) ([]models.Task, error) {
+func GetTasksForUser(userId uint) ([]models.Task, error) {
 	userTasks := []models.Task{}
-	err := DB.Db.Where("ID = ?", ID).First(&userTasks).Error
+	err := DB.Db.Where("user_id = ?", userId).First(&userTasks).Error
 	if err != nil {
 		return userTasks, err
 	}
 	return userTasks, nil
-
 }

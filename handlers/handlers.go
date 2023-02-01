@@ -68,7 +68,7 @@ func SignInUser(ctx *fiber.Ctx) error {
 
 	cookie := new(fiber.Cookie)
 	cookie.Name = "username"
-	cookie.Value = strconv.FormatUint(uint64(initializers.GetUserId(user)), 10)
+	cookie.Value = strconv.FormatUint(uint64(initializers.GetUserId(user.Username)), 10)
 	cookie.Expires = time.Now().Add(24 * time.Hour)
 	ctx.Cookie(cookie)
 	c := context.Background()
@@ -86,20 +86,18 @@ func SignInUser(ctx *fiber.Ctx) error {
 func ShowTasks(ctx *fiber.Ctx) error {
 	c := context.Background()
 	username := initializers.GetFromRedis(c, "username")
-	fmt.Printf("username retrieved from session is %v", username)
-	// ID := uint(userID)
-	// taskResponse, err := initializers.ReturnTasksWithID(ID)
+	fmt.Printf("username retrieved from session is %v\n", username)
+	userId := initializers.GetUserId(username)
+	taskResponse, err := initializers.GetTasksForUser(userId)
 
-	// if err != nil {
-	// 	return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-	// 		"success": false,
-	// 		"message": err,
-	// 	})
-	// } else {
-	// 	return ctx.Render("tasks", fiber.Map{
-	// 		"Tasks": taskResponse,
-	// 	})
-	// }
-
-	return nil
+	if err != nil {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"success": false,
+			"message": err,
+		})
+	} else {
+		return ctx.Render("tasks", fiber.Map{
+			"Tasks": taskResponse,
+		})
+	}
 }
