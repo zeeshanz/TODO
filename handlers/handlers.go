@@ -86,6 +86,12 @@ func SignInUser(ctx *fiber.Ctx) error {
 func ShowTasks(ctx *fiber.Ctx) error {
 	c := context.Background()
 	username := initializers.GetFromRedis(c, "username")
+
+	// Auto sign out if cache expired
+	if len(username) == 0 {
+		return ctx.Render("index", fiber.Map{"signInStatus": "0"})
+	}
+
 	fmt.Printf("username retrieved from session is %v\n", username)
 	userId := initializers.GetUserId(username)
 	taskResponse, err := initializers.GetTasksForUser(userId)
