@@ -1,8 +1,7 @@
 window.onload = function () {
-  $('#container').fadeTo( "slow", 1);
-
-  document.getElementById("username").focus();
   disableButtonIfFieldsAreEmpty()
+  $('#container').fadeTo("slow", 1);
+  document.getElementById("username").focus();
 }
 
 //
@@ -114,8 +113,8 @@ function disableButtonIfFieldsAreEmpty() {
     });
 
     if (empty)
-      $('#signInUserButton').prop('disabled', true);
+      $('#blueButton').prop('disabled', true);
     else
-      $('#signInUserButton').prop('disabled', false);
+      $('#blueButton').prop('disabled', false);
   });
 }
