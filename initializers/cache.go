@@ -3,6 +3,7 @@ package initializers
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -48,8 +49,11 @@ func ConnectRedis(ctx context.Context) {
 	testRedis(ctx)
 }
 
+/*
+ * Set values in Redis with a fixed time out.
+ */
 func SetToRedis(ctx context.Context, key, val string) {
-	err := Cache.redis.Set(ctx, key, val, 0).Err()
+	err := Cache.redis.Set(ctx, key, val, 1*time.Hour).Err()
 	if err != nil {
 		fmt.Println(err)
 	}
