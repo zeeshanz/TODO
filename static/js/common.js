@@ -79,6 +79,18 @@ function signOutUser() {
   }, 1000);
 }
 
+function addTodoItem() {
+  fetch('/AddNewTodo', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ Finished: false, Detail: inputValue })
+  }).then(response => response.json())
+    .then(response => li.setAttribute("data-id", JSON.parse(JSON.stringify(response)).Task.ID), li.setAttribute("data", false));
+}
+
 /// COMMON FUNCTIONS
 
 // Show error message which pops up top of the screen

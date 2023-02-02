@@ -108,6 +108,26 @@ func ShowTasks(ctx *fiber.Ctx) error {
 	}
 }
 
+func AddNewTodo(c *fiber.Ctx) error {
+	task_new := new(models.Task)
+	if err := c.BodyParser(task_new); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+
+	initializers.DB.Db.Model(&userLoggedIn).Association("Tasks").Append(task_new)
+	fmt.Println(userLoggedIn.ID)
+
+	var task_temp = []models.Task{}
+	initializers.DB.Db.Model(&userLoggedIn).Association("Tasks").Find(&task_temp)
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"Task":    task_new,
+	})
+}
+
 func SignOutUser(ctx *fiber.Ctx) error {
 	fmt.Println("Signing out user")
 	c := context.Background()
