@@ -101,3 +101,10 @@ func ShowTasks(ctx *fiber.Ctx) error {
 		})
 	}
 }
+
+func SignOutUser(ctx *fiber.Ctx) error {
+	fmt.Println("Signing out user")
+	c := context.Background()
+	initializers.DeleteFromRedis(c, "username")
+	return ctx.Render("index", fiber.Map{"signInStatus": "0"})
+}

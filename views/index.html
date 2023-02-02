@@ -9,13 +9,13 @@
   <link rel="stylesheet" href="../static/css/common.css">
 </head>
 
-<body>
+<body id="container">
   <div id="alert"></div>
   <center>
     <div style="width: 100%" id="header">
-      <table width="1000px" align="center" border="0" style="border-spacing: 0px; padding:0; margin: 0 auto">
+      <table width="100%" align="center" border="0" style="border-spacing: 0px; padding:0; margin: 0 auto">
         <tr>
-          <td>
+          <td align="center">
             <span id="logo">ToDo App</span>
           </td>
         </tr>
@@ -48,7 +48,7 @@
         <td align="center">
           <button disabled="true" id="signInUserButton" onclick="signInUser()">Sign in to ToDo App</button>
           </br>
-          <a style="text-align: center;" id="signUpUser" onclick="signUpUser()">New User Sign Up</a>
+          <a id="signUpUser" onclick="signUpUser()">New User Sign Up</a>
         </td>
       </tr>
       </tr>

@@ -64,6 +64,15 @@ func GetFromRedis(ctx context.Context, key string) string {
 	return val
 }
 
+func DeleteFromRedis(ctx context.Context, key string) error {
+	err := Cache.redis.Del(ctx, key)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return err.Err()
+}
+
 func getAllKeys(ctx context.Context, key string) []string {
 	keys := []string{}
 

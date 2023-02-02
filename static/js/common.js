@@ -1,4 +1,6 @@
 window.onload = function () {
+  $('#container').fadeTo( "slow", 1);
+
   document.getElementById("username").focus();
   disableButtonIfFieldsAreEmpty()
 }
@@ -30,7 +32,7 @@ function signInUser() {
             $("html").fadeOut(function () {
               window.location.href = "/tasks";
             });
-          }, 3000);
+          }, 2000);
         } else {
           $.showAlert("Sign in failed. Username or password incorrect.", true)
         }
@@ -68,6 +70,16 @@ function signUpUser() {
   }
 }
 
+function signOutUser() {
+  $.showAlert("Signing out", false)
+  $('#container').fadeOut
+  var alerttimer = window.setTimeout(function () {
+    $("html").fadeOut(function () {
+      window.location.href = "/signOutUser";
+    });
+  }, 1000);
+}
+
 /// COMMON FUNCTIONS
 
 // Show error message which pops up top of the screen
@@ -82,7 +94,7 @@ $.showAlert = function (message, isError) {
   if ($alert.length) {
     var alerttimer = window.setTimeout(function () {
       $alert.trigger('click');
-    }, 3000);
+    }, 2000);
     $alert.animate({ height: $alert.css('line-height') || '50px' }, 200)
       .click(function () {
         window.clearTimeout(alerttimer);
