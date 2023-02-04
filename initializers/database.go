@@ -87,13 +87,13 @@ func GetUserUuid(username string) string {
 	return tempUser.Uuid
 }
 
-func GetTasksForUser(userUuid string) ([]models.Task, error) {
-	tasks := []models.Task{}
-	fmt.Println("Querying for tasks")
-	err := DB.Db.Where("user_uuid = ?", userUuid).Find(&tasks).Error
+func GetTodosForUser(userUuid string) ([]models.Todo, error) {
+	todos := []models.Todo{}
+	fmt.Println("Querying for todos")
+	err := DB.Db.Where("user_uuid = ?", userUuid).Find(&todos).Error
 	if err != nil {
 		fmt.Println(err)
-		return tasks, err
+		return todos, err
 	}
-	return tasks, nil
+	return todos, nil
 }

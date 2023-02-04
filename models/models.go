@@ -11,9 +11,9 @@ type User struct {
 	Password string `json:"password" validate:"omitempty,min=8,alphanum"`
 }
 
-type Task struct {
+type Todo struct {
 	gorm.Model
-	TaskName  string `json:"task_name"`
+	TodoItem  string `json:"todo_item"`
 	Completed bool   `gorm:"default:false" json:"completed"`
 	UserUuid  string `json:"user_uuid"`
 }

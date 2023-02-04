@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Tasks</title>
+    <title>Todos</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico">
     <link rel="stylesheet" href="../static/css/common.css">
@@ -28,14 +28,14 @@
 
     </br>
 
-    <div id="AddTask" class="header">
+    <div id="AddTodo" class="header">
         <input class="forminput" type="text" id="todoItem" placeholder="Add a new todo item">
         <button disabled="true" onclick="addTodoItem()" id="blueButton">Add</button>
     </div>
 
-    <ul id="taskList">
-        {{range .Tasks}}
-        <li>{{.TaskName}}</li>
+    <ul id="todoList">
+        {{range .Todos}}
+        <li align="left">{{.TodoItem}}</li>
         {{end}}
     </ul>
     <script src="../static/js/common.js"></script>

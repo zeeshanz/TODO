@@ -32,7 +32,7 @@ function signInUser() {
           $.showAlert("Sign in successful. Opening the ToDo page", false)
           var alerttimer = window.setTimeout(function () {
             $("html").fadeOut(function () {
-              window.location.href = "/tasks";
+              window.location.href = "/todos";
             });
           }, 2000);
         } else {
@@ -91,9 +91,9 @@ function addTodoItem() {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ completed: false, task_name: todoItem })
+    body: JSON.stringify({ completed: false, todo_item: todoItem })
   }).then(resposne => {
-    console.log(resposne)
+    window.location.reload()
   })
 }
 

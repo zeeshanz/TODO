@@ -71,11 +71,11 @@ func SignInUser(ctx *fiber.Ctx) error {
 }
 
 /*
- * Retrieve tasks from the database.
+ * Retrieve todos from the database.
  */
-func ShowTasks(ctx *fiber.Ctx) error {
+func ShowTodos(ctx *fiber.Ctx) error {
 	c := context.Background()
-	userUuid, err := initializers.GetFromRedis(c, "user_uuid")
+	userUuid, _ := initializers.GetFromRedis(c, "user_uuid")
 
 	// Auto sign out if cache expired
 	if len(userUuid) == 0 {
@@ -83,7 +83,7 @@ func ShowTasks(ctx *fiber.Ctx) error {
 	}
 
 	fmt.Printf("user_uuid retrieved from Redis is %v\n", userUuid)
-	taskResponse, err := initializers.GetTasksForUser(userUuid)
+	todoResponse, err := initializers.GetTodosForUser(userUuid)
 
 	if err != nil {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -92,7 +92,7 @@ func ShowTasks(ctx *fiber.Ctx) error {
 		})
 	} else {
 		return ctx.Render("tasks", fiber.Map{
-			"Tasks": taskResponse,
+			"Todos": todoResponse,
 		})
 	}
 }
@@ -107,7 +107,7 @@ func AddNewTodo(ctx *fiber.Ctx) error {
 		})
 	}
 
-	var todo models.Task
+	var todo models.Todo
 	todo.UserUuid = userUuid
 
 	if err = ctx.BodyParser(&todo); err != nil {
@@ -117,14 +117,14 @@ func AddNewTodo(ctx *fiber.Ctx) error {
 		})
 	}
 
-	result := initializers.DB.Db.Model(models.Task{}).Create(&todo)
+	result := initializers.DB.Db.Model(models.Todo{}).Create(&todo)
 	if result.Error != nil {
-		return errors.New("failed to create new task")
+		return errors.New("failed to create new todo")
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
-		"message": "Task created successfully.",
+		"message": "Todo created successfully.",
 	})
 }
 
