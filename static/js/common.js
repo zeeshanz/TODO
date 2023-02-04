@@ -1,7 +1,10 @@
+// All pages have body with opacity 0 and they are faded in for a nice effect.
 window.onload = function () {
   disableButtonIfFieldsAreEmpty()
   $('#container').fadeTo("slow", 1);
-  document.getElementById("username").focus();
+  if($('#username').length) { // valid only for index.html
+    $('#username').focus
+  }
 }
 
 //
@@ -69,6 +72,7 @@ function signUpUser() {
   }
 }
 
+//
 function signOutUser() {
   $.showAlert("Signing out", false)
   $('#container').fadeOut
@@ -79,16 +83,19 @@ function signOutUser() {
   }, 1000);
 }
 
+//
 function addTodoItem() {
-  fetch('/AddNewTodo', {
+  var inputValue = document.getElementById("todoItem").value;
+  fetch('/addNewTodo', {
     method: 'POST',
     headers: {
       'Accept': 'application/json, text/plain, */*',
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({ Finished: false, Detail: inputValue })
-  }).then(response => response.json())
-    .then(response => li.setAttribute("data-id", JSON.parse(JSON.stringify(response)).Task.ID), li.setAttribute("data", false));
+  }).then(resposne => {
+    console.log(resposne)
+  })
 }
 
 /// COMMON FUNCTIONS

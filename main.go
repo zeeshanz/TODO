@@ -43,6 +43,6 @@ func setupRoutes(app *fiber.App) {
 	app.Post("/signInUser", handlers.SignInUser)
 	app.Post("/signUpUser", handlers.SignUpUser)
 	app.Get("/signOutUser", handlers.SignOutUser)
-	app.Get("/addNewTodo", handlers.AddNewTodo)
+	app.Post("/addNewTodo", handlers.AddNewTodo)
 	app.Get("/tasks", handlers.ShowTasks)
 }

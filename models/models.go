@@ -1,24 +1,19 @@
 package models
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
 
-type Task struct {
-	gorm.Model
-	ID        uint
-	TaskName  string `validate:"omitempty,ascii"`
-	CreatedAt time.Time
-	IsDone    bool `gorm:"default:false" json:"isDone"`
-	UserID    uint
-}
-
 type User struct {
 	gorm.Model
-	ID       uint   `json:"id"`
-	Username string `json:"username" validate:"omitempty,min=5,max=16,alphanum"`
-	Password string `json:"password" validate:"omitempty,min=8,max=20,alphanum"`
-	Tasks    []Task `json:"tasks"`
+	Uuid     string `json:"uuid"`
+	Username string `json:"username" validate:"omitempty,max=64" gorm:"uniqueIndex"`
+	Password string `json:"password" validate:"omitempty,min=8,alphanum"`
+}
+
+type Task struct {
+	gorm.Model
+	TaskName  string `json:"task_name"`
+	Completed bool   `gorm:"default:false" json:"completed"`
+	UserUuid  string `json:"user_uuid" gorm:"uniqueIndex:task"`
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/zeeshanz/TODO/models"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
@@ -35,17 +36,18 @@ func ConnectDB(config *Config) {
  * Add a new user. Check for duplication. Hash the password
  */
 func AddUser(userInfo models.User) error {
+	// Check if username already exists
 	var tempUser models.User
 	canAddThisUser := DB.Db.Where("username = ?", userInfo.Username).First(&tempUser).Error
 	if canAddThisUser == nil {
 		return errors.New("this username already exists")
 	}
 
+	// Add new user
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(userInfo.Password), bcrypt.DefaultCost)
 	if err == nil {
+		userInfo.Uuid = uuid.Must(uuid.NewRandom()).String() // UUID will uniquely idenfiy the user
 		userInfo.Password = string(hashedPass)
-		tempTasks := []models.Task{}
-		userInfo.Tasks = tempTasks
 		err := DB.Db.Create(&userInfo)
 		if err.Error == nil {
 			return nil
@@ -60,7 +62,6 @@ func AddUser(userInfo models.User) error {
  */
 func AuthenticateUser(userInfo models.User) error {
 	var tempUser models.User
-
 	err := DB.Db.Where("username = ?", userInfo.Username).First(&tempUser).Error
 	if err == nil {
 		err = bcrypt.CompareHashAndPassword([]byte(tempUser.Password), []byte(userInfo.Password))
@@ -77,19 +78,19 @@ func AuthenticateUser(userInfo models.User) error {
 /*
  * Retrieve username
  */
-func GetUserId(username string) uint {
+func GetUserUuid(username string) string {
 	var tempUser models.User
 	err := DB.Db.Where("username = ?", username).First(&tempUser).Error
 	if err != nil {
-		return 0
+		return ""
 	}
-	return tempUser.ID
+	return tempUser.Uuid
 }
 
-func GetTasksForUser(userId uint) ([]models.Task, error) {
+func GetTasksForUser(userUuid string) ([]models.Task, error) {
 	userTasks := []models.Task{}
 	fmt.Println("Querying for tasks")
-	err := DB.Db.Where("user_id = ?", userId).Find(&userTasks).Error
+	err := DB.Db.Where("user_uuid = ?", userUuid).Find(&userTasks).Error
 	if err != nil {
 		fmt.Println(err)
 		return userTasks, err

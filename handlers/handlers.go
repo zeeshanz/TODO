@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -20,14 +19,14 @@ var userExists bool = false
 
 const SecretKey = "secret"
 
-var userLoggedIn models.User
+var loggedInUser models.User
 
 /*
  * Sign up a new user.
  */
 func SignUpUser(c *fiber.Ctx) error {
 	var creds models.User
-	// First we need to parse the variable ctx to receive the credentials
+	// Parse ctx to receive the credentials
 	err := c.BodyParser(&creds)
 	if err != nil {
 		fmt.Println("Error with parsing credentials")
@@ -62,17 +61,19 @@ func SignInUser(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"success": false,
-			"message": "No account found. Please signup first.",
+			"message": "Sign in was unsuccessful.",
 		})
 	}
 
+	loggedInUser = user
+	fmt.Printf("loggedInUser: %v\n", loggedInUser)
 	cookie := new(fiber.Cookie)
-	cookie.Name = "username"
-	cookie.Value = strconv.FormatUint(uint64(initializers.GetUserId(user.Username)), 10)
-	cookie.Expires = time.Now().Add(24 * time.Hour)
+	cookie.Name = "user_uuid"
+	cookie.Value = initializers.GetUserUuid(user.Username)
+	cookie.Expires = time.Now().Add(1 * time.Hour)
 	ctx.Cookie(cookie)
 	c := context.Background()
-	initializers.SetToRedis(c, "username", user.Username)
+	initializers.SetToRedis(c, "user_uuid", user.Uuid)
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
@@ -93,8 +94,8 @@ func ShowTasks(ctx *fiber.Ctx) error {
 	}
 
 	fmt.Printf("username retrieved from session is %v\n", username)
-	userId := initializers.GetUserId(username)
-	taskResponse, err := initializers.GetTasksForUser(userId)
+	userUuid := initializers.GetUserUuid(username)
+	taskResponse, err := initializers.GetTasksForUser(userUuid)
 
 	if err != nil {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -110,17 +111,19 @@ func ShowTasks(ctx *fiber.Ctx) error {
 
 func AddNewTodo(c *fiber.Ctx) error {
 	task_new := new(models.Task)
+	fmt.Printf("Adding new Todo: %v\n", task_new)
 	if err := c.BodyParser(task_new); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
 
-	initializers.DB.Db.Model(&userLoggedIn).Association("Tasks").Append(task_new)
-	fmt.Println(userLoggedIn.ID)
+	fmt.Printf("Logged in user is: %v\n", &loggedInUser)
+	initializers.DB.Db.Model(&loggedInUser).Association("Tasks").Append(task_new)
+	fmt.Println(loggedInUser.ID)
 
 	var task_temp = []models.Task{}
-	initializers.DB.Db.Model(&userLoggedIn).Association("Tasks").Find(&task_temp)
+	initializers.DB.Db.Model(&loggedInUser).Association("Tasks").Find(&task_temp)
 
 	return c.JSON(fiber.Map{
 		"success": true,
