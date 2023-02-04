@@ -85,11 +85,10 @@ function signOutUser() {
 
 //
 function addTodoItem() {
-  var inputValue = document.getElementById("todoItem").value;
+  var todoItem = document.getElementById("todoItem").value;
   fetch('/addNewTodo', {
     method: 'POST',
     headers: {
-      'Accept': 'application/json, text/plain, */*',
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({ Finished: false, Detail: inputValue })

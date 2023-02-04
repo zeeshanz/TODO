@@ -10,17 +10,6 @@ import (
 	"github.com/zeeshanz/TODO/models"
 )
 
-var current_data []models.User
-var LogInType string = "-2" //-2 means nothing, -1 means account doesn't exist, 0 exists but means wrong password
-var newReload bool = true
-var regLoad bool = false
-var current_user *models.User
-var userExists bool = false
-
-const SecretKey = "secret"
-
-var loggedInUser models.User
-
 /*
  * Sign up a new user.
  */
@@ -50,7 +39,6 @@ func SignUpUser(c *fiber.Ctx) error {
  * Sign in the user. Create a cookie to remember the user.
  */
 func SignInUser(ctx *fiber.Ctx) error {
-
 	var user models.User
 	err := ctx.BodyParser(&user)
 	if err != nil {
@@ -65,15 +53,15 @@ func SignInUser(ctx *fiber.Ctx) error {
 		})
 	}
 
-	loggedInUser = user
-	fmt.Printf("loggedInUser: %v\n", loggedInUser)
+	var userId = initializers.GetUserUuid(user.Username)
+	fmt.Printf("loggedInUser: %v\n", user)
 	cookie := new(fiber.Cookie)
 	cookie.Name = "user_uuid"
-	cookie.Value = initializers.GetUserUuid(user.Username)
+	cookie.Value = userId
 	cookie.Expires = time.Now().Add(1 * time.Hour)
 	ctx.Cookie(cookie)
 	c := context.Background()
-	initializers.SetToRedis(c, "user_uuid", user.Uuid)
+	initializers.SetToRedis(c, "user_uuid", userId)
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
@@ -86,15 +74,14 @@ func SignInUser(ctx *fiber.Ctx) error {
  */
 func ShowTasks(ctx *fiber.Ctx) error {
 	c := context.Background()
-	username := initializers.GetFromRedis(c, "username")
+	userUuid := initializers.GetFromRedis(c, "user_uuid")
 
 	// Auto sign out if cache expired
-	if len(username) == 0 {
+	if len(userUuid) == 0 {
 		return ctx.Render("index", fiber.Map{"signInStatus": "0"})
 	}
 
-	fmt.Printf("username retrieved from session is %v\n", username)
-	userUuid := initializers.GetUserUuid(username)
+	fmt.Printf("user_uuid retrieved from Redis is %v\n", userUuid)
 	taskResponse, err := initializers.GetTasksForUser(userUuid)
 
 	if err != nil {
@@ -117,13 +104,6 @@ func AddNewTodo(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-
-	fmt.Printf("Logged in user is: %v\n", &loggedInUser)
-	initializers.DB.Db.Model(&loggedInUser).Association("Tasks").Append(task_new)
-	fmt.Println(loggedInUser.ID)
-
-	var task_temp = []models.Task{}
-	initializers.DB.Db.Model(&loggedInUser).Association("Tasks").Find(&task_temp)
 
 	return c.JSON(fiber.Map{
 		"success": true,

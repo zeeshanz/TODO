@@ -88,12 +88,12 @@ func GetUserUuid(username string) string {
 }
 
 func GetTasksForUser(userUuid string) ([]models.Task, error) {
-	userTasks := []models.Task{}
+	tasks := []models.Task{}
 	fmt.Println("Querying for tasks")
-	err := DB.Db.Where("user_uuid = ?", userUuid).Find(&userTasks).Error
+	err := DB.Db.Where("user_uuid = ?", userUuid).Find(&tasks).Error
 	if err != nil {
 		fmt.Println(err)
-		return userTasks, err
+		return tasks, err
 	}
-	return userTasks, nil
+	return tasks, nil
 }
