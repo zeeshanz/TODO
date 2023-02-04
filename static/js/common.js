@@ -91,7 +91,7 @@ function addTodoItem() {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ Finished: false, Detail: inputValue })
+    body: JSON.stringify({ completed: false, task_name: todoItem })
   }).then(resposne => {
     console.log(resposne)
   })

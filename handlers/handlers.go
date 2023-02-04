@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -74,7 +75,7 @@ func SignInUser(ctx *fiber.Ctx) error {
  */
 func ShowTasks(ctx *fiber.Ctx) error {
 	c := context.Background()
-	userUuid := initializers.GetFromRedis(c, "user_uuid")
+	userUuid, err := initializers.GetFromRedis(c, "user_uuid")
 
 	// Auto sign out if cache expired
 	if len(userUuid) == 0 {
@@ -96,18 +97,34 @@ func ShowTasks(ctx *fiber.Ctx) error {
 	}
 }
 
-func AddNewTodo(c *fiber.Ctx) error {
-	task_new := new(models.Task)
-	fmt.Printf("Adding new Todo: %v\n", task_new)
-	if err := c.BodyParser(task_new); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": err.Error(),
+func AddNewTodo(ctx *fiber.Ctx) error {
+	c := context.Background()
+	userUuid, err := initializers.GetFromRedis(c, "user_uuid")
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": err.Error,
 		})
 	}
 
-	return c.JSON(fiber.Map{
+	var todo models.Task
+	todo.UserUuid = userUuid
+
+	if err = ctx.BodyParser(&todo); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": err.Error,
+		})
+	}
+
+	result := initializers.DB.Db.Model(models.Task{}).Create(&todo)
+	if result.Error != nil {
+		return errors.New("failed to create new task")
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
-		"Task":    task_new,
+		"message": "Task created successfully.",
 	})
 }
 

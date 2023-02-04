@@ -17,8 +17,8 @@ var Cache RedisInstance
 func testRedis(ctx context.Context) {
 	SetToRedis(ctx, "key1", "Canada")
 	SetToRedis(ctx, "key2", "Ottawa")
-	val1 := GetFromRedis(ctx, "key1")
-	val2 := GetFromRedis(ctx, "key2")
+	val1, _ := GetFromRedis(ctx, "key1")
+	val2, _ := GetFromRedis(ctx, "key2")
 	fmt.Printf("First value with key `key1` should be Canada: %s \n", val1)
 	fmt.Printf("First value with key `key2` should be Ottawa: %s \n", val2)
 	values := getAllKeys(ctx, "key*")
@@ -59,13 +59,14 @@ func SetToRedis(ctx context.Context, key, val string) {
 	}
 }
 
-func GetFromRedis(ctx context.Context, key string) string {
+func GetFromRedis(ctx context.Context, key string) (string, error) {
 	val, err := Cache.redis.Get(ctx, key).Result()
 	if err != nil {
 		fmt.Println(err)
+		return "", err
 	}
 
-	return val
+	return val, nil
 }
 
 func DeleteFromRedis(ctx context.Context, key string) error {
