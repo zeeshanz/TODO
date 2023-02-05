@@ -2,7 +2,7 @@
 window.onload = function () {
   disableButtonIfFieldsAreEmpty()
   $('#container').fadeTo("slow", 1);
-  if($('#username').length) { // valid only for index.html
+  if ($('#username').length) { // valid only for index.html
     $('#username').focus
   }
 }
@@ -26,8 +26,8 @@ function signInUser() {
       })
     }
     fetch('/signInUser', fetchData)
-      .then(resposne => {
-        var status = resposne.status
+      .then(response => {
+        var status = response.status
         if (status == 200) {
           $.showAlert("Sign in successful. Opening the ToDo page", false)
           var alerttimer = window.setTimeout(function () {
@@ -61,8 +61,8 @@ function signUpUser() {
       })
     }
     fetch('/signUpUser', fetchData)
-      .then(resposne => {
-        var status = resposne.status
+      .then(response => {
+        var status = response.status
         if (status == 200) {
           $.showAlert("Successfully added new user", false)
         } else {
@@ -92,8 +92,25 @@ function addTodoItem() {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({ completed: false, todo_item: todoItem })
-  }).then(resposne => {
+  }).then(response => {
     window.location.reload()
+  })
+}
+
+//
+function deleteTodo(uuid) {
+  fetch('/deleteTodo', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ uuid: uuid })
+  }).then(response => {
+    if (response.status == 200) {
+      $('#' + uuid).fadeTo("slow", 0.0, function () {
+        $(this).remove()
+      })
+    }
   })
 }
 

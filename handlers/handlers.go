@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/zeeshanz/TODO/initializers"
 	"github.com/zeeshanz/TODO/models"
 )
@@ -108,6 +109,7 @@ func AddNewTodo(ctx *fiber.Ctx) error {
 	}
 
 	var todo models.Todo
+	todo.Uuid = uuid.Must(uuid.NewRandom()).String() // UUID will uniquely idenfiy the todo item
 	todo.UserUuid = userUuid
 
 	if err = ctx.BodyParser(&todo); err != nil {
@@ -126,6 +128,26 @@ func AddNewTodo(ctx *fiber.Ctx) error {
 		"success": true,
 		"message": "Todo created successfully.",
 	})
+}
+
+func DeleteTodo(ctx *fiber.Ctx) error {
+	var todo models.Todo
+	if err := ctx.BodyParser(&todo); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": err.Error,
+		})
+	}
+
+	fmt.Printf("Deleting Todo uuid %v\n", todo.Uuid)
+	todoId := initializers.GetTodoId(todo.Uuid)
+	result := initializers.DB.Db.Delete(&todo, todoId)
+
+	if result.RowsAffected == 0 {
+		return ctx.SendStatus(404)
+	}
+
+	return ctx.SendStatus(200)
 }
 
 func SignOutUser(ctx *fiber.Ctx) error {

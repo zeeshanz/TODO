@@ -87,6 +87,18 @@ func GetUserUuid(username string) string {
 	return tempUser.Uuid
 }
 
+/*
+ * Retrieve Todo item's id
+ */
+func GetTodoId(uuid string) uint {
+	var tempTodo models.Todo
+	err := DB.Db.Where("uuid = ?", uuid).First(&tempTodo).Error
+	if err != nil {
+		return 0
+	}
+	return tempTodo.ID
+}
+
 func GetTodosForUser(userUuid string) ([]models.Todo, error) {
 	todos := []models.Todo{}
 	fmt.Println("Querying for todos")

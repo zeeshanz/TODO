@@ -28,16 +28,20 @@
 
     </br>
 
-    <div id="AddTodo" class="header">
+    <div id="AddTodo">
         <input class="forminput" type="text" id="todoItem" placeholder="Add a new todo item">
         <button disabled="true" onclick="addTodoItem()" id="blueButton">Add</button>
     </div>
 
-    <ul id="todoList">
+    <table id="todoItems" width="60%" align="center" border="0" style="border-spacing: 0px; padding:0; margin: 0 auto">
         {{range .Todos}}
-        <li align="left">{{.TodoItem}}</li>
+        <tr id="{{.Uuid}}">
+            <td align="left">
+                <a id="{{.Uuid}}" onclick="deleteTodo(id)">[X] </a>[edit] {{.TodoItem}}
+            </td>
+        </tr>
         {{end}}
-    </ul>
+    </table>
     <script src="../static/js/common.js"></script>
 </body>
 
