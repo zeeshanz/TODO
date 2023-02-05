@@ -98,7 +98,7 @@ function addTodoItem() {
         var json = JSON.parse(JSON.stringify(response))
         var uuid = json.uuid
         var todoItem = json.todoItem
-        var newRow = $("<tr id='" + uuid + "'><td align='left'><a id='" + uuid + "' onclick='deleteTodo(id)'>[X]</a> " + todoItem + "</td></tr>")
+        var newRow = $("<tr id='" + uuid + "'><td align='left'><a id='" + uuid + "' onclick='completeTodo(id)'> ✅ </a><a id='" + uuid + "' onclick='deleteTodo(id)'> ❎ </a><span id='" + uuid + "'>" + todoItem + "</span></td></tr>")
         newRow.hide()
         $('#todoItems tr').last().after(newRow)
         newRow.fadeIn("slow")
@@ -123,6 +123,27 @@ function deleteTodo(uuid) {
       $('#' + uuid).fadeTo("slow", 0.0, function () {
         $(this).remove()
       })
+    }
+  })
+}
+
+function completeTodo(uuid) {
+  fetch('/completeTodo', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ uuid: uuid })
+  }).then(response => {
+    switch (response.status) {
+      case 201:
+        $('tr#' + uuid).css({ textDecoration: 'none' })
+        break;
+      case 202:
+        $('tr#' + uuid).css({ textDecoration: 'line-through' })
+        break;
+      default:
+        $.showAlert("An error has occured: Error code: " + response.status, true)
     }
   })
 }

@@ -38,7 +38,9 @@
         {{range .Todos}}
         <tr id="{{.Uuid}}">
             <td align="left">
-                <a id="{{.Uuid}}" onclick="deleteTodo(id)">[X] </a> {{.TodoItem}}
+                <a id="{{.Uuid}}" onclick="completeTodo(id)"> ✅ </a>
+                <a id="{{.Uuid}}" onclick="deleteTodo(id)"> ❎ </a>
+                <span id="{{.Uuid}}" >{{.TodoItem}}</span>
             </td>
         </tr>
         {{end}}

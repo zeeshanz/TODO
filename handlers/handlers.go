@@ -151,6 +151,38 @@ func DeleteTodo(ctx *fiber.Ctx) error {
 	return ctx.SendStatus(200)
 }
 
+func CompleteTodo(ctx *fiber.Ctx) error {
+	var todo models.Todo
+	if err := ctx.BodyParser(&todo); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": err.Error,
+		})
+	}
+
+	fmt.Printf("Completing Todo uuid %v\n", todo.Uuid)
+	todoItem, err := initializers.GetTodoItem(todo.Uuid)
+
+	if err != nil {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"success": false,
+			"message": err,
+		})
+	}
+
+	var isCompleted = todoItem.Completed
+	err = initializers.UpdateTodo(todoItem.Uuid, !isCompleted)
+	if err != nil {
+		return ctx.SendStatus(404)
+	}
+
+	if isCompleted {
+		return ctx.SendStatus(201) // meaning Todo is updated to not completed
+	} else {
+		return ctx.SendStatus(202) // meaning Todo is updated to completed
+	}
+}
+
 func SignOutUser(ctx *fiber.Ctx) error {
 	fmt.Println("Signing out user")
 	c := context.Background()

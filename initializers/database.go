@@ -99,6 +99,21 @@ func GetTodoId(uuid string) uint {
 	return tempTodo.ID
 }
 
+/*
+ * Retrieve a Todo item by uuid
+ */
+func GetTodoItem(uuid string) (models.Todo, error) {
+	var todoItem models.Todo
+	err := DB.Db.Where("uuid = ?", uuid).First(&todoItem).Error
+	if err != nil {
+		return todoItem, err
+	}
+	return todoItem, nil
+}
+
+/*
+ * Retrieve all Todos for a given user where user is identified by its uuid
+ */
 func GetTodosForUser(userUuid string) ([]models.Todo, error) {
 	todos := []models.Todo{}
 	fmt.Println("Querying for todos")
@@ -108,4 +123,17 @@ func GetTodosForUser(userUuid string) ([]models.Todo, error) {
 		return todos, err
 	}
 	return todos, nil
+}
+
+/*
+ * Mark complete status as true of false for a given Todo item
+ */
+func UpdateTodo(todoUuid string, completed bool) error {
+	todo := new(models.Todo)
+	err := DB.Db.Model(&todo).Select("Completed").Where("uuid = ?", todoUuid).Updates(models.Todo{Completed: completed})
+	if err != nil {
+		fmt.Println(err)
+		return err.Error
+	}
+	return nil
 }
