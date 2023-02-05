@@ -34,10 +34,11 @@
     </div>
 
     <table id="todoItems" width="60%" align="center" border="0" style="border-spacing: 0px; padding:0; margin: 0 auto">
+        <tr></tr>
         {{range .Todos}}
         <tr id="{{.Uuid}}">
             <td align="left">
-                <a id="{{.Uuid}}" onclick="deleteTodo(id)">[X] </a>[edit] {{.TodoItem}}
+                <a id="{{.Uuid}}" onclick="deleteTodo(id)">[X] </a> {{.TodoItem}}
             </td>
         </tr>
         {{end}}

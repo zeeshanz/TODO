@@ -103,7 +103,7 @@ func AddNewTodo(ctx *fiber.Ctx) error {
 	userUuid, err := initializers.GetFromRedis(c, "user_uuid")
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"success": false,
+			"success": 500,
 			"message": err.Error,
 		})
 	}
@@ -114,7 +114,7 @@ func AddNewTodo(ctx *fiber.Ctx) error {
 
 	if err = ctx.BodyParser(&todo); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"success": false,
+			"status":  404,
 			"message": err.Error,
 		})
 	}
@@ -124,9 +124,10 @@ func AddNewTodo(ctx *fiber.Ctx) error {
 		return errors.New("failed to create new todo")
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"success": true,
-		"message": "Todo created successfully.",
+	return ctx.JSON(fiber.Map{
+		"status":   200,
+		"todoItem": todo.TodoItem,
+		"uuid":     todo.Uuid,
 	})
 }
 
