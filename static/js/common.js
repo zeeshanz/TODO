@@ -108,7 +108,7 @@ function addTodoItem() {
         var json = JSON.parse(JSON.stringify(response))
         var uuid = json.uuid
         var todoItem = json.todoItem
-        var newRow = $("<tr id='" + uuid + "'><td align='left'><a id='" + uuid + "' onclick='completeTodo(id)'> ✅ </a><a id='" + uuid + "' onclick='deleteTodo(id)'> ❎ </a><span id='" + uuid + "'>" + todoItem + "</span></td></tr>")
+        var newRow = $("<tr id='" + uuid + "'><td align='left'><a id='" + uuid + "' onclick='completeTodo(id)'> ✅ </a><a id='" + uuid + "' onclick='deleteTodo(id)'> ❎ </a><span id='span" + uuid + "'>" + todoItem + "</span></td></tr>")
         newRow.hide()
         $('#todoItems tr').last().after(newRow)
         newRow.fadeIn("slow")
