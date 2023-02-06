@@ -36,11 +36,11 @@
     <table id="todoItems" width="60%" align="center" border="0" style="border-spacing: 0px; padding:0; margin: 0 auto">
         <tr></tr>
         {{range .Todos}}
-        <tr id="{{.Uuid}}">
+        <tr id="{{.Uuid}}" data-completed="{{.Completed}}">
             <td align="left">
                 <a id="{{.Uuid}}" onclick="completeTodo(id)"> ✅ </a>
                 <a id="{{.Uuid}}" onclick="deleteTodo(id)"> ❎ </a>
-                <span id="{{.Uuid}}" >{{.TodoItem}}</span>
+                <span id="span{{.Uuid}}">{{.TodoItem}}</span>
             </td>
         </tr>
         {{end}}

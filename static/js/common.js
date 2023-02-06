@@ -5,9 +5,19 @@ window.onload = function () {
   if ($('#username').length) { // valid only for index.html
     $('#username').focus
   }
+
+  // valid only for tasks.html to strike through the completed tasks
+  if ($('#todoItems').length) {
+    $('#todoItems > tbody > tr').each(function (data) {
+      var $this = $(this);
+      var completed = $this.data('completed'); // or var filter = $this.attr('data-filter')
+      var uuid = $(this).attr("id")
+      setCompleted(uuid, completed)
+    })
+  }
 }
 
-//
+// Authenticate and if successful sign in the user, otherwise show error message
 function signInUser() {
   if (($('#username').val()).length < 3 || ($('#password').val()).length < 3) {
     $.showAlert("Username and password fields cannot be empty", true)
@@ -42,7 +52,7 @@ function signInUser() {
   }
 }
 
-//
+// Sign up a new user and show success or failure message
 function signUpUser() {
   if (($('#username').val()).length < 3 || ($('#password').val()).length < 3) {
     $.showAlert("Username and password fields cannot be empty", true)
@@ -72,7 +82,7 @@ function signUpUser() {
   }
 }
 
-//
+// Signout the user and go back to the sign in screen
 function signOutUser() {
   $.showAlert("Signing out", false)
   $('#container').fadeOut
@@ -83,7 +93,7 @@ function signOutUser() {
   }, 1000)
 }
 
-//
+// Add a new Todo item and append to existing Todos with a nice animation
 function addTodoItem() {
   var todoItem = document.getElementById("todoItem").value
   fetch('/addNewTodo', {
@@ -110,7 +120,7 @@ function addTodoItem() {
     })
 }
 
-//
+// Delete a Todo item and update the UI
 function deleteTodo(uuid) {
   fetch('/deleteTodo', {
     method: 'POST',
@@ -127,6 +137,7 @@ function deleteTodo(uuid) {
   })
 }
 
+// Mark Todo as completed or not completed and update the UI
 function completeTodo(uuid) {
   fetch('/completeTodo', {
     method: 'POST',
@@ -137,10 +148,10 @@ function completeTodo(uuid) {
   }).then(response => {
     switch (response.status) {
       case 201:
-        $('tr#' + uuid).css({ textDecoration: 'none' })
+        setCompleted(uuid, false)
         break;
       case 202:
-        $('tr#' + uuid).css({ textDecoration: 'line-through' })
+        setCompleted(uuid, true)
         break;
       default:
         $.showAlert("An error has occured: Error code: " + response.status, true)
@@ -186,4 +197,13 @@ function disableButtonIfFieldsAreEmpty() {
     else
       $('#blueButton').prop('disabled', false)
   })
+}
+
+// Add or remove line through based on whether the todo item is completed or not
+function setCompleted(uuid, completed) {
+  if (completed == true) {
+    $('#span' + uuid).css({ textDecoration: 'line-through' })
+  } else {
+    $('#span' + uuid).css({ textDecoration: 'none' })
+  }
 }
