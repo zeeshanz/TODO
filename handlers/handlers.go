@@ -55,15 +55,17 @@ func SignInUser(ctx *fiber.Ctx) error {
 		})
 	}
 
-	var userId = initializers.GetUserUuid(user.Username)
+	var userUuid = initializers.GetUserUuid(user.Username)
 	fmt.Printf("loggedInUser: %v\n", user)
 	cookie := new(fiber.Cookie)
-	cookie.Name = "user_uuid"
-	cookie.Value = userId
+	sessionId := uuid.New().String()
+	cookie.Name = "session-id"
+	cookie.Value = sessionId
 	cookie.Expires = time.Now().Add(1 * time.Hour)
 	ctx.Cookie(cookie)
 	c := context.Background()
-	initializers.SetToRedis(c, "user_uuid", userId)
+	fmt.Printf("session-id saved in cookie: %v\n", sessionId)
+	initializers.SetToRedis(c, sessionId, userUuid)
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
@@ -75,12 +77,12 @@ func SignInUser(ctx *fiber.Ctx) error {
  * Retrieve todos from the database.
  */
 func ShowTodos(ctx *fiber.Ctx) error {
+	sessionId := ctx.Cookies("session-id")
+	fmt.Printf("session-id retrieved from cookie: %v\n", sessionId)
 	c := context.Background()
-	userUuid, _ := initializers.GetFromRedis(c, "user_uuid")
-
-	// Auto sign out if cache expired
-	if len(userUuid) == 0 {
-		return ctx.Render("index", fiber.Map{"signInStatus": "0"})
+	userUuid, err := initializers.GetFromRedis(c, sessionId)
+	if err != nil {
+		fmt.Println(err)
 	}
 
 	fmt.Printf("user_uuid retrieved from Redis is %v\n", userUuid)
