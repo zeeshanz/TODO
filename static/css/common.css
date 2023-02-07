@@ -127,6 +127,16 @@ a:active {
   padding-top: 10px;
 }
 
+.inputdisabled {
+  background-color: transparent !important;
+  border: none;
+}
+
+.inputenabled {
+  background-color: #efefef;
+  border: 1px solid #CCC;
+}
+
 .field_label {
   color: #707070;
   text-align: left;

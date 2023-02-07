@@ -108,7 +108,7 @@ function addTodoItem() {
         var json = JSON.parse(JSON.stringify(response))
         var uuid = json.uuid
         var todoItem = json.todoItem
-        var newRow = $("<tr id='" + uuid + "'><td align='left'><a id='" + uuid + "' onclick='completeTodo(id)'> ✅ </a><a id='" + uuid + "' onclick='deleteTodo(id)'> ❎ </a><span id='span" + uuid + "'>" + todoItem + "</span></td></tr>")
+        var newRow = $("<tr id='" + uuid + "'><td align='left'><a id='" + uuid + "' onclick='editTodo(id)'> ✎ </a><a id='" + uuid + "' onclick='completeTodo(id)'> ✅ </a><a id='" + uuid + "' onclick='deleteTodo(id)'> ❎ </a><input class='inputdisabled' id='span" + uuid + "' value='" + todoItem + "' disabled='true'/><a hidden id='" + uuid + "' onclick='updateTodo(id)'> 💾 </a></td></tr>")
         newRow.hide()
         $('#todoItems tr').last().after(newRow)
         newRow.fadeIn("slow")
@@ -157,6 +157,21 @@ function completeTodo(uuid) {
         $.showAlert("An error has occured: Error code: " + response.status, true)
     }
   })
+}
+
+function editTodo(uuid) {
+  if ($('#span' + uuid).prop('disabled')) {
+    $('#span' + uuid).prop('disabled', false)
+    $('#span' + uuid).removeClass("inputdisabled");
+    $('#span' + uuid).addClass("inputenabled");
+    $('#save' + uuid).show()
+    $('#span' + uuid).focus
+  } else {
+    $('#span' + uuid).prop('disabled', true)
+    $('#span' + uuid).removeClass("inputenabled");
+    $('#span' + uuid).addClass("inputdisabled");
+    $('#save' + uuid).hide()
+  }
 }
 
 /// COMMON FUNCTIONS

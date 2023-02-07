@@ -38,9 +38,11 @@
         {{range .Todos}}
         <tr id="{{.Uuid}}" data-completed="{{.Completed}}">
             <td align="left">
+                <a id="{{.Uuid}}" onclick="editTodo(id)"> ✎ </a>
                 <a id="{{.Uuid}}" onclick="completeTodo(id)"> ✅ </a>
                 <a id="{{.Uuid}}" onclick="deleteTodo(id)"> ❎ </a>
-                <span id="span{{.Uuid}}">{{.TodoItem}}</span>
+                <input class="inputdisabled" id="span{{.Uuid}}" value="{{.TodoItem}}" disabled="true" />
+                <a hidden id="save{{.Uuid}}" onclick="updateTodo(id)"> 💾 </a>
             </td>
         </tr>
         {{end}}
