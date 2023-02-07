@@ -46,5 +46,6 @@ func setupRoutes(app *fiber.App) {
 	app.Post("/addNewTodo", handlers.AddNewTodo)
 	app.Post("/deleteTodo", handlers.DeleteTodo)
 	app.Post("/completeTodo", handlers.CompleteTodo)
+	app.Post("/updateTodo", handlers.UpdateTodo)
 	app.Get("/todos", handlers.ShowTodos)
 }

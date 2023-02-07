@@ -134,7 +134,7 @@ a:active {
 
 .inputenabled {
   background-color: #efefef;
-  border: 1px solid #CCC;
+  border: none;
 }
 
 .field_label {

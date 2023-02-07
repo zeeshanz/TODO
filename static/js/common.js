@@ -108,7 +108,7 @@ function addTodoItem() {
         var json = JSON.parse(JSON.stringify(response))
         var uuid = json.uuid
         var todoItem = json.todoItem
-        var newRow = $("<tr id='" + uuid + "'><td align='left'><a id='" + uuid + "' onclick='editTodo(id)'> ✎ </a><a id='" + uuid + "' onclick='completeTodo(id)'> ✅ </a><a id='" + uuid + "' onclick='deleteTodo(id)'> ❎ </a><input class='inputdisabled' id='span" + uuid + "' value='" + todoItem + "' disabled='true'/><a hidden id='" + uuid + "' onclick='updateTodo(id)'> 💾 </a></td></tr>")
+        var newRow = $("<tr id='" + uuid + "'><td align='left'><a id='" + uuid + "' onclick='editTodo(id)'> ✎ </a><a id='" + uuid + "' onclick='completeTodo(id)'> ✅ </a><a id='" + uuid + "' onclick='deleteTodo(id)'> ❎ </a><input class='inputdisabled' id='span" + uuid + "' value='" + todoItem + "' disabled='true'/><a hidden id='save" + uuid + "' onclick='updateTodo(id)'> 💾 </a></td></tr>")
         newRow.hide()
         $('#todoItems tr').last().after(newRow)
         newRow.fadeIn("slow")
@@ -159,18 +159,43 @@ function completeTodo(uuid) {
   })
 }
 
+// Chage the UI elements to allow user to update the Todo item
 function editTodo(uuid) {
   if ($('#span' + uuid).prop('disabled')) {
-    $('#span' + uuid).prop('disabled', false)
-    $('#span' + uuid).removeClass("inputdisabled");
-    $('#span' + uuid).addClass("inputenabled");
+    $('#span' + uuid).prop('disabled', false).removeClass("inputdisabled").addClass("inputenabled").focus()
     $('#save' + uuid).show()
-    $('#span' + uuid).focus
   } else {
-    $('#span' + uuid).prop('disabled', true)
-    $('#span' + uuid).removeClass("inputenabled");
-    $('#span' + uuid).addClass("inputdisabled");
+    $('#span' + uuid).prop('disabled', true).removeClass("inputenabled").addClass("inputdisabled")
     $('#save' + uuid).hide()
+  }
+}
+
+// Send to the server updated todo item text. If text size is less then 4 characters an error will be returned
+function updateTodo(uuid) {
+  var inputId = uuid.replace('save', '')
+  var newTodo = $('#span' + inputId).val()
+  if (newTodo.length < 4) {
+    $.showAlert("Todo item must be at least 4 characters long", true)
+  } else {
+    fetch('/updateTodo', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ uuid: inputId, todo_item: newTodo })
+    }).then(response => {
+      if (response.status == 200) {
+        $.showAlert("Todo updated", false)
+        $('#span' + inputId).prop('disabled', true).removeClass("inputenabled").addClass("inputdisabled")
+        $('#save' + inputId).hide()
+      } else {
+        if (response.status == 403) {
+          $.showAlert("Length of text too short. Error code: " + response.status, true)
+        } else {
+          $.showAlert("An error occurred. Error code: " + response.status, true)
+        }
+      }
+    })
   }
 }
 

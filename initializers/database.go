@@ -128,9 +128,22 @@ func GetTodosForUser(userUuid string) ([]models.Todo, error) {
 /*
  * Mark complete status as true of false for a given Todo item
  */
-func UpdateTodo(todoUuid string, completed bool) error {
+func UpdateTodoStatus(todoUuid string, completed bool) error {
 	todo := new(models.Todo)
 	err := DB.Db.Model(&todo).Select("Completed").Where("uuid = ?", todoUuid).Updates(models.Todo{Completed: completed})
+	if err != nil {
+		fmt.Println(err)
+		return err.Error
+	}
+	return nil
+}
+
+/*
+ * Update the todo item with new text
+ */
+func UpdateTodoItem(todoUuid string, newTodo string) error {
+	todo := new(models.Todo)
+	err := DB.Db.Model(&todo).Where("uuid = ?", todoUuid).Updates(models.Todo{TodoItem: newTodo})
 	if err != nil {
 		fmt.Println(err)
 		return err.Error

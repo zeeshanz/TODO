@@ -171,7 +171,7 @@ func CompleteTodo(ctx *fiber.Ctx) error {
 	}
 
 	var isCompleted = todoItem.Completed
-	err = initializers.UpdateTodo(todoItem.Uuid, !isCompleted)
+	err = initializers.UpdateTodoStatus(todoItem.Uuid, !isCompleted)
 	if err != nil {
 		return ctx.SendStatus(404)
 	}
@@ -181,6 +181,36 @@ func CompleteTodo(ctx *fiber.Ctx) error {
 	} else {
 		return ctx.SendStatus(202) // meaning Todo is updated to completed
 	}
+}
+
+func UpdateTodo(ctx *fiber.Ctx) error {
+	var todo models.Todo
+	if err := ctx.BodyParser(&todo); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": err.Error,
+		})
+	}
+
+	// Stop execution any further if length of string is less than 4 characters
+	if len(todo.TodoItem) < 4 {
+		return ctx.SendStatus(403)
+	}
+
+	todoItem, err := initializers.GetTodoItem(todo.Uuid)
+	if err != nil {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"success": false,
+			"message": err,
+		})
+	}
+
+	err = initializers.UpdateTodoItem(todoItem.Uuid, todo.TodoItem)
+	if err != nil {
+		return ctx.SendStatus(404)
+	}
+
+	return ctx.SendStatus(200)
 }
 
 func SignOutUser(ctx *fiber.Ctx) error {
