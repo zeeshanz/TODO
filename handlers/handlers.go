@@ -64,7 +64,6 @@ func SignInUser(ctx *fiber.Ctx) error {
 	cookie.Expires = time.Now().Add(1 * time.Hour)
 	ctx.Cookie(cookie)
 	c := context.Background()
-	fmt.Printf("session-id saved in cookie: %v\n", sessionId)
 	initializers.SetToRedis(c, sessionId, userUuid)
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -78,14 +77,12 @@ func SignInUser(ctx *fiber.Ctx) error {
  */
 func ShowTodos(ctx *fiber.Ctx) error {
 	sessionId := ctx.Cookies("session-id")
-	fmt.Printf("session-id retrieved from cookie: %v\n", sessionId)
 	c := context.Background()
 	userUuid, err := initializers.GetFromRedis(c, sessionId)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Printf("user_uuid retrieved from Redis is %v\n", userUuid)
 	todoResponse, err := initializers.GetTodosForUser(userUuid)
 
 	if err != nil {
@@ -102,7 +99,8 @@ func ShowTodos(ctx *fiber.Ctx) error {
 
 func AddNewTodo(ctx *fiber.Ctx) error {
 	c := context.Background()
-	userUuid, err := initializers.GetFromRedis(c, "user_uuid")
+	sessionId := ctx.Cookies("session-id")
+	userUuid, err := initializers.GetFromRedis(c, sessionId)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"success": 500,
