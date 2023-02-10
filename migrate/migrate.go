@@ -4,21 +4,21 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/zeeshanz/TODO/initializers"
+	"github.com/zeeshanz/TODO/database"
 	"github.com/zeeshanz/TODO/models"
 )
 
 func init() {
-	config, err := initializers.LoadConfig(".")
+	config, err := database.LoadConfig(".")
 	if err != nil {
 		log.Fatal("? Could not load environment variables", err)
 	}
 
-	initializers.ConnectDB(&config)
+	database.ConnectDB(&config)
 }
 
 func main() {
-	initializers.DB.Db.AutoMigrate(&models.Todo{})
-	initializers.DB.Db.AutoMigrate(&models.User{})
+	database.DB.Db.AutoMigrate(&models.Todo{})
+	database.DB.Db.AutoMigrate(&models.User{})
 	fmt.Println("? Migration complete")
 }

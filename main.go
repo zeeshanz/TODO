@@ -6,20 +6,21 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
+	"github.com/zeeshanz/TODO/database"
 	"github.com/zeeshanz/TODO/handlers"
-	"github.com/zeeshanz/TODO/initializers"
+	apiRoutes "github.com/zeeshanz/TODO/routes/api"
 )
 
 func main() {
 
-	config, err := initializers.LoadConfig(".")
+	config, err := database.LoadConfig(".")
 	if err != nil {
 		log.Fatal("? Could not load environment variables", err)
 	}
 
 	ctx := context.TODO()
-	initializers.ConnectDB(&config)
-	initializers.ConnectRedis(ctx)
+	database.ConnectDB(&config)
+	database.ConnectRedis(ctx)
 
 	engine := html.New("./views", ".html")
 
@@ -34,18 +35,15 @@ func main() {
 
 	setupRoutes(app)
 
-	initializers.SetToRedis(ctx, "name", "redis-test-123")
+	database.SetToRedis(ctx, "name", "redis-test-123")
 
 	app.Listen(":3001")
 }
 
 func setupRoutes(app *fiber.App) {
+	api := app.Group("")
+	apiRoutes.TodoRoute(api.Group(""))
 	app.Post("/signInUser", handlers.SignInUser)
 	app.Post("/signUpUser", handlers.SignUpUser)
 	app.Get("/signOutUser", handlers.SignOutUser)
-	app.Post("/addNewTodo", handlers.AddNewTodo)
-	app.Post("/deleteTodo", handlers.DeleteTodo)
-	app.Post("/completeTodo", handlers.CompleteTodo)
-	app.Post("/updateTodo", handlers.UpdateTodo)
-	app.Get("/todos", handlers.ShowTodos)
 }
