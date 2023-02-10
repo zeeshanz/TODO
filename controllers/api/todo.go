@@ -83,19 +83,17 @@ func GetTodos(ctx *fiber.Ctx) error {
 }
 
 func DeleteTodo(ctx *fiber.Ctx) error {
-	var todo models.Todo
-	if err := ctx.BodyParser(&todo); err != nil {
+	var todoDTO models.TodoDTO
+	if err := ctx.BodyParser(&todoDTO); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
 			"message": err.Error,
 		})
 	}
 
-	fmt.Printf("Deleting Todo uuid %v\n", todo.Uuid)
-	todoId := repos.GetTodoId(todo.Uuid)
-	result := database.DB.Db.Delete(&todo, todoId)
-
-	if result.RowsAffected == 0 {
+	fmt.Printf("Deleting Todo uuid %v\n", todoDTO.Uuid)
+	err := repos.DeleteTodo(todoDTO.Uuid)
+	if err != nil {
 		return ctx.SendStatus(404)
 	}
 
@@ -103,16 +101,16 @@ func DeleteTodo(ctx *fiber.Ctx) error {
 }
 
 func CompleteTodo(ctx *fiber.Ctx) error {
-	var todo models.Todo
-	if err := ctx.BodyParser(&todo); err != nil {
+	var todoDTO models.TodoDTO
+	if err := ctx.BodyParser(&todoDTO); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
 			"message": err.Error,
 		})
 	}
 
-	fmt.Printf("Completing Todo uuid %v\n", todo.Uuid)
-	todoItem, err := repos.GetTodoItem(todo.Uuid)
+	fmt.Printf("Completing Todo uuid %v\n", todoDTO.Uuid)
+	todoItem, err := repos.GetTodoItem(todoDTO.Uuid)
 
 	if err != nil {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -122,7 +120,7 @@ func CompleteTodo(ctx *fiber.Ctx) error {
 	}
 
 	var isCompleted = todoItem.Completed
-	err = repos.UpdateTodoStatus(todoItem.Uuid, !isCompleted)
+	err = repos.UpdateTodoStatus(todoDTO.Uuid, !isCompleted)
 	if err != nil {
 		return ctx.SendStatus(404)
 	}
@@ -135,8 +133,8 @@ func CompleteTodo(ctx *fiber.Ctx) error {
 }
 
 func UpdateTodo(ctx *fiber.Ctx) error {
-	var todo models.Todo
-	if err := ctx.BodyParser(&todo); err != nil {
+	var todoDTO models.TodoDTO
+	if err := ctx.BodyParser(&todoDTO); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
 			"message": err.Error,
@@ -144,19 +142,11 @@ func UpdateTodo(ctx *fiber.Ctx) error {
 	}
 
 	// Stop execution any further if length of string is less than 4 characters
-	if len(todo.TodoItem) < 4 {
+	if len(todoDTO.TodoItem) < 4 {
 		return ctx.SendStatus(403)
 	}
 
-	todoItem, err := repos.GetTodoItem(todo.Uuid)
-	if err != nil {
-		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"success": false,
-			"message": err,
-		})
-	}
-
-	err = repos.UpdateTodoItem(todoItem.Uuid, todo.TodoItem)
+	err := repos.UpdateTodoItem(todoDTO.Uuid, todoDTO.TodoItem)
 	if err != nil {
 		return ctx.SendStatus(404)
 	}

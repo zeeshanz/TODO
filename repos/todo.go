@@ -8,7 +8,6 @@ import (
 )
 
 func CreateTodo(uuid string, userUuid string, completed bool, todoItem string) (*models.Todo, error) {
-
 	todo := &models.Todo{
 		Uuid:      uuid,
 		UserUuid:  userUuid,
@@ -26,13 +25,13 @@ func CreateTodo(uuid string, userUuid string, completed bool, todoItem string) (
 /*
  * Retrieve Todo item's id
  */
-func GetTodoId(uuid string) uint {
-	var tempTodo models.Todo
-	err := database.DB.Db.Where("uuid = ?", uuid).First(&tempTodo).Error
+func getTodoId(uuid string) uint {
+	var TodoItem models.Todo
+	err := database.DB.Db.Where("uuid = ?", uuid).First(&TodoItem).Error
 	if err != nil {
 		return 0
 	}
-	return tempTodo.ID
+	return TodoItem.ID
 }
 
 /*
@@ -77,9 +76,25 @@ func UpdateTodoStatus(todoUuid string, completed bool) error {
 /*
  * Update the todo item with new text
  */
-func UpdateTodoItem(todoUuid string, newTodo string) error {
+func UpdateTodoItem(todoUuid string, updatedTodo string) error {
 	todo := new(models.Todo)
-	err := database.DB.Db.Model(&todo).Where("uuid = ?", todoUuid).Updates(models.Todo{TodoItem: newTodo})
+	err := database.DB.Db.Model(&todo).Where("uuid = ?", todoUuid).Updates(models.Todo{TodoItem: updatedTodo})
+	if err != nil {
+		fmt.Println(err)
+		return err.Error
+	}
+	return nil
+}
+
+/*
+ * Update the todo item with new text
+ */
+func DeleteTodo(todoUuid string) error {
+	todoId := getTodoId(todoUuid) // Getting the primary key because it is used in the Delete function.
+	fmt.Printf("Deleting todo with id: %v\n", todoId)
+	var todo models.Todo
+	err := database.DB.Db.Delete(&todo, todoId)
+
 	if err != nil {
 		fmt.Println(err)
 		return err.Error

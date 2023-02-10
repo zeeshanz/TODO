@@ -133,6 +133,8 @@ function deleteTodo(uuid) {
       $('#' + uuid).fadeTo("slow", 0.0, function () {
         $(this).remove()
       })
+    } else {
+      $.showAlert("An error has occured: Error code: " + response.status, true)
     }
   })
 }
