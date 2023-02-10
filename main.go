@@ -7,7 +7,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
 	"github.com/zeeshanz/TODO/database"
-	"github.com/zeeshanz/TODO/handlers"
 	apiRoutes "github.com/zeeshanz/TODO/routes/api"
 )
 
@@ -43,7 +42,5 @@ func main() {
 func setupRoutes(app *fiber.App) {
 	api := app.Group("")
 	apiRoutes.TodoRoute(api.Group(""))
-	app.Post("/signInUser", handlers.SignInUser)
-	app.Post("/signUpUser", handlers.SignUpUser)
-	app.Get("/signOutUser", handlers.SignOutUser)
+	apiRoutes.UserRoute(api.Group(""))
 }
