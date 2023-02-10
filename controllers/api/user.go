@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/zeeshanz/TODO/database"
 	"github.com/zeeshanz/TODO/models"
+	"github.com/zeeshanz/TODO/repos"
 )
 
 /*
@@ -22,7 +23,7 @@ func SignUpUser(c *fiber.Ctx) error {
 		fmt.Println("Error with parsing credentials")
 	}
 
-	err = database.AddUser(creds)
+	err = repos.AddUser(creds)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"success": false,
@@ -46,7 +47,7 @@ func SignInUser(ctx *fiber.Ctx) error {
 		fmt.Println("Error with parsing credentials")
 	}
 
-	err = database.AuthenticateUser(user)
+	err = repos.AuthenticateUser(user)
 	if err != nil {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"success": false,
@@ -54,7 +55,7 @@ func SignInUser(ctx *fiber.Ctx) error {
 		})
 	}
 
-	var userUuid = database.GetUserUuid(user.Username)
+	var userUuid = repos.GetUserUuid(user.Username)
 	fmt.Printf("loggedInUser: %v\n", user)
 	cookie := new(fiber.Cookie)
 	sessionId := uuid.New().String()

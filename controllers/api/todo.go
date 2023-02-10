@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/zeeshanz/TODO/database"
 	"github.com/zeeshanz/TODO/models"
+	"github.com/zeeshanz/TODO/repos"
 )
 
 func AddNewTodo(ctx *fiber.Ctx) error {
@@ -57,7 +58,7 @@ func GetTodos(ctx *fiber.Ctx) error {
 		fmt.Println(err)
 	}
 
-	todoResponse, err := database.GetTodosForUser(userUuid)
+	todoResponse, err := repos.GetTodosForUser(userUuid)
 
 	if err != nil {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -81,7 +82,7 @@ func DeleteTodo(ctx *fiber.Ctx) error {
 	}
 
 	fmt.Printf("Deleting Todo uuid %v\n", todo.Uuid)
-	todoId := database.GetTodoId(todo.Uuid)
+	todoId := repos.GetTodoId(todo.Uuid)
 	result := database.DB.Db.Delete(&todo, todoId)
 
 	if result.RowsAffected == 0 {
@@ -101,7 +102,7 @@ func CompleteTodo(ctx *fiber.Ctx) error {
 	}
 
 	fmt.Printf("Completing Todo uuid %v\n", todo.Uuid)
-	todoItem, err := database.GetTodoItem(todo.Uuid)
+	todoItem, err := repos.GetTodoItem(todo.Uuid)
 
 	if err != nil {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -111,7 +112,7 @@ func CompleteTodo(ctx *fiber.Ctx) error {
 	}
 
 	var isCompleted = todoItem.Completed
-	err = database.UpdateTodoStatus(todoItem.Uuid, !isCompleted)
+	err = repos.UpdateTodoStatus(todoItem.Uuid, !isCompleted)
 	if err != nil {
 		return ctx.SendStatus(404)
 	}
@@ -137,7 +138,7 @@ func UpdateTodo(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(403)
 	}
 
-	todoItem, err := database.GetTodoItem(todo.Uuid)
+	todoItem, err := repos.GetTodoItem(todo.Uuid)
 	if err != nil {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"success": false,
@@ -145,7 +146,7 @@ func UpdateTodo(ctx *fiber.Ctx) error {
 		})
 	}
 
-	err = database.UpdateTodoItem(todoItem.Uuid, todo.TodoItem)
+	err = repos.UpdateTodoItem(todoItem.Uuid, todo.TodoItem)
 	if err != nil {
 		return ctx.SendStatus(404)
 	}
