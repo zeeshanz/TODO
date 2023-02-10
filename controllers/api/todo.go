@@ -7,6 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"github.com/jinzhu/copier"
 	"github.com/zeeshanz/TODO/database"
 	"github.com/zeeshanz/TODO/models"
 	"github.com/zeeshanz/TODO/repos"
@@ -58,18 +59,19 @@ func GetTodos(ctx *fiber.Ctx) error {
 		fmt.Println(err)
 	}
 
-	todoResponse, err := repos.GetTodosForUser(userUuid)
-
-	if err != nil {
-		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+	todoResponse := []models.TodoResponse{}
+	todos, _ := repos.GetAllTodos(userUuid)
+	if err := copier.Copy(&todoResponse, &todos); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"success": false,
-			"message": err,
-		})
-	} else {
-		return ctx.Render("tasks", fiber.Map{
-			"Todos": todoResponse,
+			"message": "Cannot map results",
 		})
 	}
+
+	return ctx.Render("tasks", fiber.Map{
+		"Todos": todoResponse,
+	})
+
 }
 
 func DeleteTodo(ctx *fiber.Ctx) error {

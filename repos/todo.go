@@ -34,7 +34,7 @@ func GetTodoItem(uuid string) (models.Todo, error) {
 /*
  * Retrieve all Todos for a given user where user is identified by its uuid
  */
-func GetTodosForUser(userUuid string) ([]models.Todo, error) {
+func GetAllTodos(userUuid string) ([]models.Todo, error) {
 	todos := []models.Todo{}
 	fmt.Println("Querying for todos")
 	err := database.DB.Db.Where("user_uuid = ?", userUuid).Find(&todos).Error
