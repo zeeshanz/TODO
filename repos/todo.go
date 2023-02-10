@@ -7,6 +7,22 @@ import (
 	"github.com/zeeshanz/TODO/models"
 )
 
+func CreateTodo(uuid string, userUuid string, completed bool, todoItem string) (*models.Todo, error) {
+
+	todo := &models.Todo{
+		Uuid:      uuid,
+		UserUuid:  userUuid,
+		Completed: completed,
+		TodoItem:  todoItem,
+	}
+
+	if err := database.DB.Db.Create(&todo).Error; err != nil {
+		return nil, err
+	}
+	return todo, nil
+
+}
+
 /*
  * Retrieve Todo item's id
  */

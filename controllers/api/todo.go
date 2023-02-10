@@ -13,7 +13,7 @@ import (
 	"github.com/zeeshanz/TODO/repos"
 )
 
-func AddNewTodo(ctx *fiber.Ctx) error {
+func CreateTodo(ctx *fiber.Ctx) error {
 	fmt.Println("Adding new todo")
 	c := context.Background()
 	sessionId := ctx.Cookies("session-id")
@@ -25,26 +25,34 @@ func AddNewTodo(ctx *fiber.Ctx) error {
 		})
 	}
 
-	var todo models.Todo
-	todo.Uuid = uuid.Must(uuid.NewRandom()).String() // UUID will uniquely idenfiy the todo item
-	todo.UserUuid = userUuid
+	var todoDTO models.TodoDTO
+	todoDTO.Uuid = uuid.Must(uuid.NewRandom()).String() // UUID will uniquely idenfiy the todo item
+	todoDTO.UserUuid = userUuid
 
-	if err = ctx.BodyParser(&todo); err != nil {
+	if err = ctx.BodyParser(&todoDTO); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"status":  404,
 			"message": err.Error,
 		})
 	}
 
-	result := database.DB.Db.Model(models.Todo{}).Create(&todo)
-	if result.Error != nil {
+	aTodo, err := repos.CreateTodo(todoDTO.Uuid, todoDTO.UserUuid, todoDTO.Completed, todoDTO.TodoItem)
+	if err != nil {
 		return errors.New("failed to create new todo")
+	}
+
+	result := &models.TodoResponse{}
+	if err := copier.Copy(&result, &aTodo); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Cannot map results",
+		})
 	}
 
 	return ctx.JSON(fiber.Map{
 		"status":   200,
-		"todoItem": todo.TodoItem,
-		"uuid":     todo.Uuid,
+		"todoItem": todoDTO.TodoItem,
+		"uuid":     todoDTO.Uuid,
 	})
 }
 
@@ -68,7 +76,7 @@ func GetTodos(ctx *fiber.Ctx) error {
 		})
 	}
 
-	return ctx.Render("tasks", fiber.Map{
+	return ctx.Render("todos", fiber.Map{
 		"Todos": todoResponse,
 	})
 

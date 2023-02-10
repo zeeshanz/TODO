@@ -6,7 +6,7 @@ window.onload = function () {
     $('#username').focus
   }
 
-  // valid only for tasks.html to strike through the completed tasks
+  // valid only for todos.html to strike through the completed todos
   if ($('#todoItems').length) {
     $('#todoItems > tbody > tr').each(function (data) {
       var $this = $(this);

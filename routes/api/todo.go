@@ -6,7 +6,7 @@ import (
 )
 
 func TodoRoute(route fiber.Router) {
-	route.Post("/addNewTodo", apiControllers.AddNewTodo)
+	route.Post("/addNewTodo", apiControllers.CreateTodo)
 	route.Post("/deleteTodo", apiControllers.DeleteTodo)
 	route.Post("/completeTodo", apiControllers.CompleteTodo)
 	route.Post("/updateTodo", apiControllers.UpdateTodo)
