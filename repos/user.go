@@ -2,6 +2,7 @@ package repos
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/google/uuid"
@@ -13,7 +14,7 @@ import (
 /*
  * Add a new user. Check for duplication. Hash the password
  */
-func AddUser(username string) error {
+func AddUser(username string, password string) error {
 	// Check if username already exists
 	var user models.User
 	canAddThisUser := database.DB.Db.Where("username = ?", username).First(&user).Error
@@ -22,7 +23,7 @@ func AddUser(username string) error {
 	}
 
 	// Add new user
-	hashedPass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	hashedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err == nil {
 		user.Uuid = uuid.Must(uuid.NewRandom()).String() // UUID will uniquely idenfiy the user
 		user.Username = strings.TrimSpace(username)
@@ -37,19 +38,21 @@ func AddUser(username string) error {
 }
 
 /*
- * Authentication as part of user sign in.
- */
-func AuthenticateUser(userInfo models.User) error {
-	var tempUser models.User
-	err := database.DB.Db.Where("username = ?", userInfo.Username).First(&tempUser).Error
+- Authentication as part of user sign in.
+*/
+func AuthenticateUser(username string, password string) error {
+	var user models.User
+	err := database.DB.Db.Where("username = ?", username).First(&user).Error
 	if err == nil {
-		err = bcrypt.CompareHashAndPassword([]byte(tempUser.Password), []byte(userInfo.Password))
+		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 		if err == nil {
 			return nil
 		} else {
+			fmt.Println("incorrect password please try again")
 			return errors.New("incorrect password please try again")
 		}
 	} else {
+		fmt.Println("username not found")
 		return errors.New("username not found")
 	}
 }

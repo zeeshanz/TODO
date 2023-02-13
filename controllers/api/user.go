@@ -26,10 +26,7 @@ func SignUpUser(c *fiber.Ctx) error {
 		})
 	}
 
-	fmt.Printf("username: %v", userDTO.Username)
-	fmt.Printf("password: %v", userDTO.Password)
-
-	if err := repos.AddUser(userDTO.Username); err != nil {
+	if err := repos.AddUser(userDTO.Username, userDTO.Password); err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"success": false,
 			"message": "Could not add new user.",
@@ -52,7 +49,7 @@ func SignInUser(ctx *fiber.Ctx) error {
 		fmt.Println("Error with parsing credentials")
 	}
 
-	err = repos.AuthenticateUser(user)
+	err = repos.AuthenticateUser(user.Username, user.Password)
 	if err != nil {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"success": false,
