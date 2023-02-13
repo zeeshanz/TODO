@@ -2,6 +2,7 @@ package repos
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/zeeshanz/TODO/database"
@@ -12,20 +13,21 @@ import (
 /*
  * Add a new user. Check for duplication. Hash the password
  */
-func AddUser(userInfo models.User) error {
+func AddUser(username string) error {
 	// Check if username already exists
-	var tempUser models.User
-	canAddThisUser := database.DB.Db.Where("username = ?", userInfo.Username).First(&tempUser).Error
+	var user models.User
+	canAddThisUser := database.DB.Db.Where("username = ?", username).First(&user).Error
 	if canAddThisUser == nil {
 		return errors.New("this username already exists")
 	}
 
 	// Add new user
-	hashedPass, err := bcrypt.GenerateFromPassword([]byte(userInfo.Password), bcrypt.DefaultCost)
+	hashedPass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err == nil {
-		userInfo.Uuid = uuid.Must(uuid.NewRandom()).String() // UUID will uniquely idenfiy the user
-		userInfo.Password = string(hashedPass)
-		err := database.DB.Db.Create(&userInfo)
+		user.Uuid = uuid.Must(uuid.NewRandom()).String() // UUID will uniquely idenfiy the user
+		user.Username = strings.TrimSpace(username)
+		user.Password = string(hashedPass)
+		err := database.DB.Db.Create(&user)
 		if err.Error == nil {
 			return nil
 		}

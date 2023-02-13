@@ -16,18 +16,23 @@ import (
  * Sign up a new user.
  */
 func SignUpUser(c *fiber.Ctx) error {
-	var creds models.User
+	var userDTO models.UserDTO
+
 	// Parse ctx to receive the credentials
-	err := c.BodyParser(&creds)
-	if err != nil {
-		fmt.Println("Error with parsing credentials")
+	if err := c.BodyParser(&userDTO); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"status":  404,
+			"message": err.Error,
+		})
 	}
 
-	err = repos.AddUser(creds)
-	if err != nil {
+	fmt.Printf("username: %v", userDTO.Username)
+	fmt.Printf("password: %v", userDTO.Password)
+
+	if err := repos.AddUser(userDTO.Username); err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"success": false,
-			"message": "User already exists.",
+			"message": "Could not add new user.",
 		})
 	} else {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{

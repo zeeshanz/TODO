@@ -71,13 +71,10 @@ function signUpUser() {
       })
     }
     fetch('/signUpUser', fetchData)
+      .then(response => response.json())
       .then(response => {
-        var status = response.status
-        if (status == 200) {
-          $.showAlert("Successfully added new user", false)
-        } else {
-          $.showAlert("Could not add user to the database. Response code: " + status, true)
-        }
+        var json = JSON.parse(JSON.stringify(response))
+        $.showAlert(json.message, !response.success)
       })
   }
 }
