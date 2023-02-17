@@ -51,7 +51,6 @@ func (s *RepoTestSuite) SetupTest() {
 }
 
 func (s *RepoTestSuite) TestCreateUser() {
-
 	repo := NewRepo(s.db)
 
 	username_test := "harris"
@@ -71,7 +70,6 @@ func (s *RepoTestSuite) TestCreateUser() {
 	s.Equal(username_test, user.Username)
 	s.Equal(password_test, user.Password)
 	s.NoError(s.mock.ExpectationsWereMet())
-
 }
 
 func (s *RepoTestSuite) TestFindUserEmpty() {
@@ -118,6 +116,55 @@ func (s *RepoTestSuite) TestFindExistingUser() {
 	s.Equal(password_create, user_created.Password)
 	s.NoError(s.mock.ExpectationsWereMet())
 
+}
+
+func (s *RepoTestSuite) TestCreateTodo() {
+	repo := NewRepo(s.db)
+
+	todo_item_test := "Breakfast at 7 am"
+	completed_test := false
+	uuid_test := "a139e8e0-aecc-11ed-afa1-0242ac120002"
+	user_uuid_test := "fcf1050e-e191-45da-894d-4d965fb10c56"
+
+	s.mock.ExpectBegin()
+	s.mock.ExpectQuery("INSERT INTO \"todos\" \\(\"created_at\",\"updated_at\",\"deleted_at\",\"uuid\",\"todo_item\",\"completed\",\"user_uuid\"\\) VALUES \\(\\$1,\\$2,\\$3,\\$4,\\$5\\,\\$6\\,\\$7\\) RETURNING \"id\"").
+		WithArgs(anyTime{}, anyTime{}, nil, uuid_test, todo_item_test, completed_test, user_uuid_test).
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
+	s.mock.ExpectCommit()
+
+	todo, err := CreateTodo(uuid_test, todo_item_test, completed_test, user_uuid_test, repo.db)
+
+	s.NoError(err)
+	s.Equal(uuid_test, todo.Uuid)
+	s.Equal(user_uuid_test, todo.UserUuid)
+	s.Equal(todo_item_test, todo.TodoItem)
+	s.Equal(completed_test, todo.Completed)
+	s.NoError(s.mock.ExpectationsWereMet())
+}
+
+func (s *RepoTestSuite) TestCreateTodoWrongValue() {
+	repo := NewRepo(s.db)
+
+	todo_item_test := "Breakfast at 7 am"
+	todo_item_wrong_value_test := "Breakfast at 8 am"
+	completed_test := false
+	uuid_test := "a139e8e0-aecc-11ed-afa1-0242ac120002"
+	user_uuid_test := "fcf1050e-e191-45da-894d-4d965fb10c56"
+
+	s.mock.ExpectBegin()
+	s.mock.ExpectQuery("INSERT INTO \"todos\" \\(\"created_at\",\"updated_at\",\"deleted_at\",\"uuid\",\"todo_item\",\"completed\",\"user_uuid\"\\) VALUES \\(\\$1,\\$2,\\$3,\\$4,\\$5\\,\\$6\\,\\$7\\) RETURNING \"id\"").
+		WithArgs(anyTime{}, anyTime{}, nil, uuid_test, todo_item_test, completed_test, user_uuid_test).
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
+	s.mock.ExpectCommit()
+
+	todo, err := CreateTodo(uuid_test, todo_item_test, completed_test, user_uuid_test, repo.db)
+
+	s.NoError(err)
+	s.Equal(uuid_test, todo.Uuid)
+	s.Equal(user_uuid_test, todo.UserUuid)
+	s.NotEqual(todo_item_wrong_value_test, todo.TodoItem)
+	s.Equal(completed_test, todo.Completed)
+	s.NoError(s.mock.ExpectationsWereMet())
 }
 
 func TestRepoTestSuite(t *testing.T) {
